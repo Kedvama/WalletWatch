@@ -1,6 +1,9 @@
 package com.NoviBackend.WalletWatch.wallet;
 
+import com.NoviBackend.WalletWatch.stock.Stock;
 import jakarta.persistence.*;
+
+import java.util.Set;
 
 @Entity(name = "Wallets")
 public class Wallet {
@@ -12,6 +15,9 @@ public class Wallet {
 
     @Column
     Boolean shared = false;
+
+    @OneToMany(mappedBy = "wallet")
+    private Set<Stock> stocks;
 
     // Constructor
     public Wallet() {

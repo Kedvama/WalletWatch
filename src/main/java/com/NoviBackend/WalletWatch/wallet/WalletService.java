@@ -7,13 +7,12 @@ import java.util.List;
 @Service
 public class WalletService {
 
-    private final WalletRepository walletRepository;
-
-    public WalletService(WalletRepository walletRepository){
-        this.walletRepository = walletRepository;
-    }
 
     public List<Wallet> getAllSharedWallets() {
-        return walletRepository.findAll();
+        return null;
+    }
+
+    public Wallet findById(int id) {
+        return null;
     }
 }

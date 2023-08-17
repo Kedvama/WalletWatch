@@ -1,5 +1,6 @@
 package com.NoviBackend.WalletWatch.stock;
 
+import com.NoviBackend.WalletWatch.wallet.Wallet;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -29,6 +30,10 @@ public abstract class Stock {
 
     @Column
     private float percentageGoal;
+
+    @ManyToOne
+    @JoinColumn(name="wallet_id", nullable = false)
+    private Wallet wallet;
 
     // Constructor
     public Stock(){}
