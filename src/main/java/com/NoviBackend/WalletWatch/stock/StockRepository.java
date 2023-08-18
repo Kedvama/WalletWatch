@@ -1,6 +1,5 @@
-package com.NoviBackend.WalletWatch.repository;
+package com.NoviBackend.WalletWatch.stock;
 
-import com.NoviBackend.WalletWatch.stock.Stock;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StockRepository extends JpaRepository<Stock, Long> {

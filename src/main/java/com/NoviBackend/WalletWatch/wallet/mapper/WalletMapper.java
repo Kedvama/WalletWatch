@@ -1,6 +1,6 @@
-package com.NoviBackend.WalletWatch.mapper;
+package com.NoviBackend.WalletWatch.wallet.mapper;
 
-import com.NoviBackend.WalletWatch.dto.WalletDto;
+import com.NoviBackend.WalletWatch.wallet.dto.WalletDto;
 import com.NoviBackend.WalletWatch.wallet.Wallet;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;

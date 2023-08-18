@@ -1,4 +1,4 @@
-package com.NoviBackend.WalletWatch.repository;
+package com.NoviBackend.WalletWatch.subscription;
 
 import com.NoviBackend.WalletWatch.stock.Stock;
 import org.springframework.data.jpa.repository.JpaRepository;

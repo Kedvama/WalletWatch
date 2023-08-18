@@ -1,9 +1,8 @@
 package com.NoviBackend.WalletWatch.wallet;
 
-import com.NoviBackend.WalletWatch.dto.WalletDto;
-import com.NoviBackend.WalletWatch.mapper.WalletMapper;
-import com.NoviBackend.WalletWatch.repository.SubscriptionRepository;
-import com.NoviBackend.WalletWatch.repository.WalletRepository;
+import com.NoviBackend.WalletWatch.wallet.dto.WalletDto;
+import com.NoviBackend.WalletWatch.wallet.mapper.WalletMapper;
+import com.NoviBackend.WalletWatch.subscription.SubscriptionRepository;
 import com.NoviBackend.WalletWatch.stock.Stock;
 import org.springframework.stereotype.Service;
 
@@ -40,9 +39,5 @@ public class WalletService {
             return null;
 
         return wallet.get();
-    }
-
-    public Long addStock(Stock stock) {
-        return null;
     }
 }

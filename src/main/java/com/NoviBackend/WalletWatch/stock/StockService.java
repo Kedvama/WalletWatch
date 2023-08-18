@@ -1,6 +1,5 @@
 package com.NoviBackend.WalletWatch.stock;
 
-import com.NoviBackend.WalletWatch.repository.StockRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
