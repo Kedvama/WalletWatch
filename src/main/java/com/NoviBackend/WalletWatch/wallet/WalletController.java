@@ -1,15 +1,11 @@
 package com.NoviBackend.WalletWatch.wallet;
 
-import com.NoviBackend.WalletWatch.dto.WalletDto;
-import com.NoviBackend.WalletWatch.stock.Stock;
+import com.NoviBackend.WalletWatch.wallet.dto.WalletDto;
 import com.NoviBackend.WalletWatch.stock.StockService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController

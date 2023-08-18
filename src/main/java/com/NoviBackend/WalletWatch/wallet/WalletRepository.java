@@ -1,6 +1,5 @@
-package com.NoviBackend.WalletWatch.repository;
+package com.NoviBackend.WalletWatch.wallet;
 
-import com.NoviBackend.WalletWatch.wallet.Wallet;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

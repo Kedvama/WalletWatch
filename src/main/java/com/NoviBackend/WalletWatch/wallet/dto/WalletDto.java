@@ -1,4 +1,4 @@
-package com.NoviBackend.WalletWatch.dto;
+package com.NoviBackend.WalletWatch.wallet.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
