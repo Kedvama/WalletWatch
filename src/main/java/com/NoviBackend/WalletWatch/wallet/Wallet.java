@@ -14,7 +14,11 @@ public class Wallet {
     private Long id;
 
     @Column
-    Boolean shared = false;
+    private Boolean shared = false;
+
+    // @manytoone -> to user
+    // private String username;
+    // make user dto to show username. mabey make it possible to see email only when subscribed.
 
     @OneToMany(mappedBy = "wallet")
     private Set<Stock> stocks;
@@ -22,7 +26,6 @@ public class Wallet {
     // Constructor
     public Wallet() {
     }
-
 
     // Getters
     public Long getId(){
