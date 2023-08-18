@@ -1,5 +1,7 @@
 package com.NoviBackend.WalletWatch.wallet;
 
+import com.NoviBackend.WalletWatch.dto.WalletDto;
+import com.NoviBackend.WalletWatch.mapper.WalletMapper;
 import com.NoviBackend.WalletWatch.repository.SubscriptionRepository;
 import com.NoviBackend.WalletWatch.repository.WalletRepository;
 import com.NoviBackend.WalletWatch.stock.Stock;
@@ -11,20 +13,25 @@ import java.util.Optional;
 @Service
 public class WalletService {
 
-    private WalletRepository walletRepository;
-    private SubscriptionRepository subscriptionRepository;
+    private final WalletRepository walletRepository;
+    private final SubscriptionRepository subscriptionRepository;
+    private final WalletMapper walletMapper;
 
-    public WalletService(WalletRepository walletRepository, SubscriptionRepository subscriptionRepository){
+    public WalletService(WalletRepository walletRepository,
+                         SubscriptionRepository subscriptionRepository,
+                         WalletMapper walletMapper){
         this.subscriptionRepository = subscriptionRepository;
         this.walletRepository = walletRepository;
+        this.walletMapper = walletMapper;
     }
 
-    public List<Wallet> getAllPublicWallets() {
+    public List<WalletDto> getAllPublicWallets() {
         List<Wallet> walletList = walletRepository.findWalletBySharedIsTrue();
         if(walletList.isEmpty())
             return null;
 
-        return walletList;
+
+        return walletMapper.convertWalletToDtoList(walletList);
     }
 
     public Wallet findPublicById(int id) {
