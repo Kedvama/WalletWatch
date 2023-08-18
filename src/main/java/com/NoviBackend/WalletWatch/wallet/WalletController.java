@@ -42,7 +42,7 @@ public class WalletController {
 
     @GetMapping("/yourwallet")
     public Wallet getYourStocks(){
-        Wallet wallet = walletService.findPublicById(1); // this is to test if it works, this will return your own stock
+        Wallet wallet = walletService.findPublicById(6); // this is to test if it works, this will return your own stock
         if(wallet == null)
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 
@@ -60,6 +60,8 @@ public class WalletController {
     }
 
     @GetMapping("/yourwallet/{id}")
+    // this play needs to be edited with a findByIdAndWalletId so you will only get the
+    // stock back if it is inside your own wallet.
     public Stock getAStock(@PathVariable int id){
         Stock stock = stockService.findById(id);
         if(stock == null)

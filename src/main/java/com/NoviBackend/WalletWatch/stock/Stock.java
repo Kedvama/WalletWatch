@@ -1,17 +1,21 @@
 package com.NoviBackend.WalletWatch.stock;
 
 import com.NoviBackend.WalletWatch.wallet.Wallet;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 
 @Entity(name = "Stocks")
-public abstract class Stock {
+public class Stock {
 
     // Attributes
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column
+    private String stockName;
 
     @Column
     private String type;
@@ -33,6 +37,7 @@ public abstract class Stock {
 
     @ManyToOne
     @JoinColumn(name="wallet_id", nullable = false)
+    @JsonIgnore
     private Wallet wallet;
 
     // Constructor
@@ -52,6 +57,21 @@ public abstract class Stock {
         return id;
     }
 
+    public String getStockName() {
+        return stockName;
+    }
+
+    public void setStockName(String stockName) {
+        this.stockName = stockName;
+    }
+
+    public Wallet getWallet() {
+        return wallet;
+    }
+
+    public void setWallet(Wallet wallet) {
+        this.wallet = wallet;
+    }
 
     public String getType() {
         return type;
