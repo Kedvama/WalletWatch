@@ -3,9 +3,7 @@ package com.NoviBackend.WalletWatch.wallet;
 import com.NoviBackend.WalletWatch.exception.EntityNotFoundException;
 import com.NoviBackend.WalletWatch.wallet.dto.WalletDto;
 import com.NoviBackend.WalletWatch.stock.StockService;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -13,11 +11,9 @@ import java.util.List;
 public class WalletController {
 
     private final WalletService walletService;
-    private final StockService stockService;
 
     public WalletController(WalletService walletService, StockService stockService){
         this.walletService = walletService;
-        this.stockService =stockService;
     }
 
     @GetMapping("/wallets")
