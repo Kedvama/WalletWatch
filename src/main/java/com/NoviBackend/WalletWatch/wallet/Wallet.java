@@ -23,6 +23,7 @@ public class Wallet {
     public Wallet() {
     }
 
+
     // Getters
     public Long getId(){
         return id;
@@ -34,5 +35,13 @@ public class Wallet {
 
     public void setShared(Boolean shared) {
         this.shared = shared;
+    }
+
+    public Set<Stock> getStocks() {
+        return stocks;
+    }
+
+    public void setStocks(Set<Stock> stocks) {
+        this.stocks = stocks;
     }
 }
