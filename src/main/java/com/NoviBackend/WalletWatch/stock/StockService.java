@@ -7,7 +7,7 @@ import java.util.Optional;
 @Service
 public class StockService {
 
-    private StockRepository stockRepository;
+    private final StockRepository stockRepository;
 
     public StockService(StockRepository stockRepository){
         this.stockRepository = stockRepository;
@@ -17,9 +17,10 @@ public class StockService {
         // find the stock, this will need another check to see if the stock is inside your wallet.
         // else it should not be shown.
         Optional<Stock> stock = stockRepository.findById((long) id);
-        if(stock.isEmpty())
-            return null;
+        return stock.orElse(null);
+    }
 
-        return stock.get();
+    public void addStock(Stock stock){
+        stockRepository.save(stock);
     }
 }

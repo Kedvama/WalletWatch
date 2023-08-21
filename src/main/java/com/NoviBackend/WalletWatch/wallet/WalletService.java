@@ -2,8 +2,6 @@ package com.NoviBackend.WalletWatch.wallet;
 
 import com.NoviBackend.WalletWatch.wallet.dto.WalletDto;
 import com.NoviBackend.WalletWatch.wallet.mapper.WalletMapper;
-import com.NoviBackend.WalletWatch.subscription.SubscriptionRepository;
-import com.NoviBackend.WalletWatch.stock.Stock;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,13 +11,10 @@ import java.util.Optional;
 public class WalletService {
 
     private final WalletRepository walletRepository;
-    private final SubscriptionRepository subscriptionRepository;
     private final WalletMapper walletMapper;
 
     public WalletService(WalletRepository walletRepository,
-                         SubscriptionRepository subscriptionRepository,
                          WalletMapper walletMapper){
-        this.subscriptionRepository = subscriptionRepository;
         this.walletRepository = walletRepository;
         this.walletMapper = walletMapper;
     }
@@ -34,10 +29,7 @@ public class WalletService {
     }
 
     public Wallet findPublicById(int id) {
-        Optional<Wallet> wallet = walletRepository.findWalletBySharedIsTrueAndId((long) id);
-        if(wallet.isEmpty())
-            return null;
-
-        return wallet.get();
+        Optional<Wallet> wallet = walletRepository.findWalletBySharedIsTrueAndId(id);
+        return wallet.orElse(null);
     }
 }

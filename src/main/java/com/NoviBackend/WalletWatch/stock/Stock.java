@@ -4,8 +4,6 @@ import com.NoviBackend.WalletWatch.wallet.Wallet;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.math.BigDecimal;
-
 @Entity(name = "Stocks")
 public class Stock {
 
@@ -21,13 +19,13 @@ public class Stock {
     private String type;
 
     @Column
-    private BigDecimal value;
+    private int value;
 
     @Column
-    private BigDecimal buyLimit;
+    private int buyLimit;
 
     @Column
-    private BigDecimal sellLimit;
+    private int sellLimit;
 
     @Column
     private String notations;
@@ -43,7 +41,8 @@ public class Stock {
     // Constructor
     public Stock(){}
 
-    public Stock(String type, BigDecimal value, BigDecimal buyLimit, BigDecimal sellLimit, String notations, float percentageGoal) {
+    public Stock(String stockName, String type, int value, int buyLimit, int sellLimit, String notations, float percentageGoal) {
+        this.stockName = stockName;
         this.type = type;
         this.value = value;
         this.buyLimit = buyLimit;
@@ -65,14 +64,6 @@ public class Stock {
         this.stockName = stockName;
     }
 
-    public Wallet getWallet() {
-        return wallet;
-    }
-
-    public void setWallet(Wallet wallet) {
-        this.wallet = wallet;
-    }
-
     public String getType() {
         return type;
     }
@@ -81,27 +72,27 @@ public class Stock {
         this.type = type;
     }
 
-    public BigDecimal getValue() {
+    public int getValue() {
         return value;
     }
 
-    public void setValue(BigDecimal value) {
+    public void setValue(int value) {
         this.value = value;
     }
 
-    public BigDecimal getBuyLimit() {
+    public int getBuyLimit() {
         return buyLimit;
     }
 
-    public void setBuyLimit(BigDecimal buyLimit) {
+    public void setBuyLimit(int buyLimit) {
         this.buyLimit = buyLimit;
     }
 
-    public BigDecimal getSellLimit() {
+    public int getSellLimit() {
         return sellLimit;
     }
 
-    public void setSellLimit(BigDecimal sellLimit) {
+    public void setSellLimit(int sellLimit) {
         this.sellLimit = sellLimit;
     }
 
@@ -121,10 +112,19 @@ public class Stock {
         this.percentageGoal = percentageGoal;
     }
 
+    public Wallet getWallet() {
+        return wallet;
+    }
+
+    public void setWallet(Wallet wallet) {
+        this.wallet = wallet;
+    }
+
     @Override
     public String toString() {
         return "Stock{" +
                 "id=" + id +
+                ", stockName='" + stockName + '\'' +
                 ", type='" + type + '\'' +
                 ", value=" + value +
                 ", buyLimit=" + buyLimit +

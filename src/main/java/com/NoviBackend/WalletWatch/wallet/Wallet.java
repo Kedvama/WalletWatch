@@ -1,9 +1,12 @@
 package com.NoviBackend.WalletWatch.wallet;
 
 import com.NoviBackend.WalletWatch.stock.Stock;
+import com.NoviBackend.WalletWatch.subscription.Subscription;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name = "Wallets")
 public class Wallet {
@@ -16,15 +19,13 @@ public class Wallet {
     @Column
     private Boolean shared = false;
 
-    // @manytoone -> to user
-    // private String username;
-    // make user dto to show username. mabey make it possible to see email only when subscribed.
-
     @OneToMany(mappedBy = "wallet")
-    private Set<Stock> stocks;
+    private List<Stock> stocks;
+
 
     // Constructor
     public Wallet() {
+        this.stocks = new ArrayList<>();
     }
 
     // Getters
@@ -40,11 +41,26 @@ public class Wallet {
         this.shared = shared;
     }
 
-    public Set<Stock> getStocks() {
+    public List<Stock> getStocks() {
         return stocks;
     }
 
-    public void setStocks(Set<Stock> stocks) {
+    public void setStocks(List<Stock> stocks) {
         this.stocks = stocks;
     }
+
+    @Override
+    public String toString() {
+        return "Wallet{" +
+                "id=" + id +
+                ", shared=" + shared +
+                ", stocks=" + stocks +
+                '}';
+    }
 }
+
+// could add:
+// - amount stocks
+// - amount followers
+// and more to the Wallet or WalletDto, so people could get some more info
+// about the wallet before they subscribe.
