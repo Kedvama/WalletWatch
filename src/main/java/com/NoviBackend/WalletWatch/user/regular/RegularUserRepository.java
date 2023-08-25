@@ -1,4 +1,4 @@
-package com.NoviBackend.WalletWatch.user;
+package com.NoviBackend.WalletWatch.user.regular;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

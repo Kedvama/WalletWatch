@@ -25,7 +25,7 @@ public class WalletMapper {
 
         // loop through the list of wallets,
         // map them to a WalletDto and
-        // them to the list
+        // add them to the list
         // return list with dto's
         for(Wallet w: wallet){
             walletDtoList.add(modelMapper.map(w, WalletDto.class));

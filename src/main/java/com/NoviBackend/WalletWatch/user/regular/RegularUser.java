@@ -1,9 +1,10 @@
-package com.NoviBackend.WalletWatch.user;
+package com.NoviBackend.WalletWatch.user.regular;
 
+import com.NoviBackend.WalletWatch.user.AbstractUsers;
 import jakarta.persistence.Entity;
 
 @Entity
-public class RegularUser extends AbstractUsers{
+public class RegularUser extends AbstractUsers {
 
     public RegularUser() {
         super();
