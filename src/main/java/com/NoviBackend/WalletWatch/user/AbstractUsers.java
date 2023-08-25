@@ -18,10 +18,10 @@ public abstract class AbstractUsers {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String firstName;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String surname;
 
     @Email
@@ -38,7 +38,6 @@ public abstract class AbstractUsers {
 
     // constructor
     public AbstractUsers(){
-
     }
 
     public AbstractUsers(String username, String firstName, String surname, String emailAddress) {
@@ -47,6 +46,7 @@ public abstract class AbstractUsers {
         this.surname = surname;
         this.emailAddress = emailAddress;
         this.personalWallet = new Wallet();
+        // wallet needs to be saved.
     }
 
 
@@ -89,6 +89,10 @@ public abstract class AbstractUsers {
 
     public Wallet getPersonalWallet() {
         return personalWallet;
+    }
+
+    public void setPersonalWallet(Wallet wallet) {
+        this.personalWallet = wallet;
     }
 
     public Set<Subscription> getSubscriptions() {

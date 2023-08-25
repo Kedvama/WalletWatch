@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 public class RegularUser extends AbstractUsers{
 
     public RegularUser() {
+        super();
     }
 
     public RegularUser(String username, String firstName, String surname, String emailAddress) {
