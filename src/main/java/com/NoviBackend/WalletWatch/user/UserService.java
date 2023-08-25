@@ -1,6 +1,7 @@
 package com.NoviBackend.WalletWatch.user;
 
 import com.NoviBackend.WalletWatch.wallet.WalletService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,13 +24,18 @@ public class UserService {
     }
 
     public long createUser(RegularUser user) {
-        // check if username or email already exist
-
-
         // create wallet and set it for user.
-        user.setPersonalWallet(walletService.createWallet());
-        regularUserRepository.save(user);
-
+        try{
+            user.setPersonalWallet(walletService.createWallet());
+            regularUserRepository.save(user);
+        }catch (DataIntegrityViolationException ex){
+            // checks which column causes the DataIntegrityViolationException
+            if(regularUserRepository.existsRegularUserByUsername(user.getUsername())){
+                return -1;
+            } else if (regularUserRepository.existsRegularUserByEmailAddress(user.getEmailAddress())) {
+                return -2;
+            }
+        }
         return user.getId();
     }
 
@@ -38,3 +44,4 @@ public class UserService {
 
     }
 }
+

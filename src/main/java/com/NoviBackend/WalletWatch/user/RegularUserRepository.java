@@ -5,4 +5,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RegularUserRepository extends JpaRepository<RegularUser, Long> {
+    boolean existsRegularUserByUsername(String username);
+    boolean existsRegularUserByEmailAddress(String emailAddress);
 }

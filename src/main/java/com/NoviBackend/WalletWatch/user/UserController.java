@@ -1,6 +1,7 @@
 package com.NoviBackend.WalletWatch.user;
 
 import com.NoviBackend.WalletWatch.exception.EntityNotFoundException;
+import com.NoviBackend.WalletWatch.exception.UniqueAlreadyExistsException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -19,10 +20,17 @@ public class UserController {
 
     @PostMapping("/create")
     public ResponseEntity<Object> createUser(@RequestBody RegularUser user) {
-        System.out.println(user.getPersonalWallet());
         Long userId = userService.createUser(user);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().replacePath("/user/{id}")
+        if(userId == -1) {
+            throw new UniqueAlreadyExistsException("Username :" + user.getUsername() + ", already exists");
+        }else if (userId == -2) {
+            throw new UniqueAlreadyExistsException("Email address:" + user.getEmailAddress() + ", already in use");
+        }
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .replacePath("/user/{id}")
                 .buildAndExpand(userId).toUri();
 
         return ResponseEntity.created(location).build();
