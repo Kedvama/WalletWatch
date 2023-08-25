@@ -1,10 +1,11 @@
-package com.NoviBackend.WalletWatch.user;
+package com.NoviBackend.WalletWatch.user.professional;
 
+import com.NoviBackend.WalletWatch.user.AbstractUsers;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 
 @Entity
-public class ProfessionalUser extends AbstractUsers{
+public class ProfessionalUser extends AbstractUsers {
 
     @Column
     private String company;
