@@ -1,8 +1,6 @@
 package com.NoviBackend.WalletWatch.wallet;
 
 import com.NoviBackend.WalletWatch.stock.Stock;
-import com.NoviBackend.WalletWatch.subscription.Subscription;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;

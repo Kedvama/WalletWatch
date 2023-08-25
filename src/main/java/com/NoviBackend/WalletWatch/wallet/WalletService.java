@@ -32,4 +32,16 @@ public class WalletService {
         Optional<Wallet> wallet = walletRepository.findWalletBySharedIsTrueAndId(id);
         return wallet.orElse(null);
     }
+
+    public Wallet saveWallet(Wallet wallet){
+        walletRepository.save(wallet);
+        return wallet;
+    }
+
+    public Wallet createWallet(){
+        Wallet wallet = new Wallet();
+        walletRepository.save(wallet);
+
+        return wallet;
+    }
 }
