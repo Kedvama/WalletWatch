@@ -65,7 +65,7 @@ public class RegularUserController {
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .replacePath("/prof/{id}")
+                .replacePath("/prof/{profId}")
                 .buildAndExpand(profId).toUri();
 
         return ResponseEntity.created(location).build();

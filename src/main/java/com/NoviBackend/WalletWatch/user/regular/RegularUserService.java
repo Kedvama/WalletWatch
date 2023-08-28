@@ -1,7 +1,7 @@
 package com.NoviBackend.WalletWatch.user.regular;
 
 import com.NoviBackend.WalletWatch.request.RequestPromote;
-import com.NoviBackend.WalletWatch.user.mapper.UserMapper;
+import com.NoviBackend.WalletWatch.user.professional.ProfUserRepository;
 import com.NoviBackend.WalletWatch.user.professional.ProfUserService;
 import com.NoviBackend.WalletWatch.wallet.WalletService;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -14,16 +14,19 @@ import java.util.Optional;
 public class RegularUserService {
     private final RegularUserRepository regularUserRepository;
     private final WalletService walletService;
-    private final UserMapper userMapper;
     private final ProfUserService profUserService;
 
 
-    public RegularUserService(RegularUserRepository regularUserRepository, WalletService walletService,
-                              UserMapper userMapper, ProfUserService profUserService){
+    public RegularUserService(RegularUserRepository regularUserRepository,
+                              WalletService walletService,
+                              ProfUserService profUserService,
+                              ProfUserRepository profUserRepository){
         this.regularUserRepository = regularUserRepository;
         this.walletService = walletService;
-        this.userMapper = userMapper;
         this.profUserService = profUserService;
+    }
+    public void removeRegularUser(RegularUser user){
+        regularUserRepository.delete(user);
     }
 
     public RegularUser findById(Long id) {
@@ -36,13 +39,17 @@ public class RegularUserService {
     }
 
     public long createUser(RegularUser user) {
-        // create wallet and set it for user.
+        // check if username or email in ProfessionalUser
+        int available = profUserService.existsByUserameAndEmail(user);
+
+        if(available < 0){
+            return available;
+        }
+
         try{
             user.setPersonalWallet(walletService.createWallet());
             regularUserRepository.save(user);
         }catch (DataIntegrityViolationException ex){
-            // remove the created wallet
-
             // checks which column causes the DataIntegrityViolationException
             if(regularUserRepository.existsRegularUserByUsername(user.getUsername())){
                 return -1;
@@ -54,8 +61,9 @@ public class RegularUserService {
     }
 
     public Long promoteUser(RequestPromote request, long userId) {
-        RegularUser reUser = this.findById(userId);
+        RegularUser reUser = findById(userId);
         Long profId = profUserService.createProfessionalUser(reUser, request);
+        removeRegularUser(reUser);
         return profId;
     }
 }
@@ -65,4 +73,5 @@ TODO
 
 createUser:
 - remove the created wallet when an error is thrown
+
  */

@@ -16,4 +16,8 @@ public class UserMapper {
     public ProfessionalUser convertRegularUserToProfessional(RegularUser regularUser){
         return modelMapper.map(regularUser, ProfessionalUser.class);
     }
+
+    public RegularUser convertProfessionalToRegularUser(ProfessionalUser professionalUser){
+        return modelMapper.map(professionalUser, RegularUser.class);
+    }
 }
