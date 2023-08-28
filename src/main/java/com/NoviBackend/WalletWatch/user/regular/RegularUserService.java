@@ -50,6 +50,8 @@ public class RegularUserService {
             user.setPersonalWallet(walletService.createWallet());
             regularUserRepository.save(user);
         }catch (DataIntegrityViolationException ex){
+            // remove wallet
+            walletService.deleteWallet(user.getPersonalWallet());
             // checks which column causes the DataIntegrityViolationException
             if(regularUserRepository.existsRegularUserByUsername(user.getUsername())){
                 return -1;
@@ -67,11 +69,3 @@ public class RegularUserService {
         return profId;
     }
 }
-
-/*
-TODO
-
-createUser:
-- remove the created wallet when an error is thrown
-
- */

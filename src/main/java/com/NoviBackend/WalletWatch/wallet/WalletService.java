@@ -44,4 +44,8 @@ public class WalletService {
 
         return wallet;
     }
+
+    public void deleteWallet(Wallet wallet){
+        walletRepository.delete(wallet);
+    }
 }
