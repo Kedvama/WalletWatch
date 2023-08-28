@@ -1,15 +1,16 @@
 package com.NoviBackend.WalletWatch.request;
 
 
-public class RequestPromote {
+public class RequestPromote extends RequestMessage{
 
     private String company;
     private String introduction;
 
-    public RequestPromote() {
+    public RequestPromote(){
     }
 
-    public RequestPromote(String company, String introduction){
+    public RequestPromote(String company, String introduction, String message){
+        super(message);
         this.company = company;
         this.introduction = introduction;
     }
