@@ -38,7 +38,7 @@ public class RegularUserController {
         return user;
     }
 
-    @PostMapping("/create")
+    @PostMapping("/users")
     public ResponseEntity<Object> createUser(@RequestBody RegularUser user) {
         Long userId = regularUserService.createUser(user);
 
@@ -81,4 +81,6 @@ promoteToProffesional:
 
 goToPersonalPage:
 - should only go to personal wallet and account
+
+
  */
