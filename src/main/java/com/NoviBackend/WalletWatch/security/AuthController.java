@@ -16,18 +16,21 @@ public class AuthController {
 
     private final JwtUtil jwtUtil;
     private final JdbcUserDetailsManager jdbcUserDetailsManager;
+    private final AuthenticationService authenticationService;
 
-    public AuthController(JwtUtil jwtUtil, DataSource dataSource) {
-        this.jwtUtil = jwtUtil;
+    public AuthController(DataSource dataSource, AuthenticationService authenticationService, JwtUtil jwtUtil) {
         this.jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
+        this.authenticationService = authenticationService;
+        this.jwtUtil = jwtUtil;
+
     }
 
-    @PostMapping("/requesttoken")
+    @PostMapping("/authentication")
     public String login(@RequestBody @Validated LoginRequest request){
-        /*
-        creeer een securityservice die de request pakt en kijkt of de inlog geldig is.
-        Zoja, stuur JwtUtil generate token terug.
-         */
+
+        if(!authenticationService.checkCredentials(request)){
+            return "invalid login credentials";
+        }
 
         return jwtUtil.generateToken(jdbcUserDetailsManager.loadUserByUsername(request.getUsername()));
     }
