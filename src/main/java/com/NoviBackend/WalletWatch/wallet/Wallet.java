@@ -62,3 +62,4 @@ public class Wallet {
 // - amount followers
 // and more to the Wallet or WalletDto, so people could get some more info
 // about the wallet before they subscribe.
+// add stock inside here
