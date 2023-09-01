@@ -3,8 +3,11 @@ package com.NoviBackend.WalletWatch.user.regular;
 import com.NoviBackend.WalletWatch.exception.EntityNotFoundException;
 import com.NoviBackend.WalletWatch.exception.UniqueAlreadyExistsException;
 import com.NoviBackend.WalletWatch.request.RequestPromote;
+import com.NoviBackend.WalletWatch.user.dto.RegularUserCreationDto;
 import com.NoviBackend.WalletWatch.user.dto.RegularUserDto;
+import com.NoviBackend.WalletWatch.wallet.Wallet;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -26,65 +29,62 @@ public class RegularUserController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<Object> createUser(@RequestBody RegularUserDto userDto) {
+    public ResponseEntity<Object> createUser(@RequestBody RegularUserCreationDto userCreationDto) {
         // check username and password
-        regularUserService.usernameEmailCheck(userDto);
+        regularUserService.usernameEmailCheck(userCreationDto);
 
-        Long userId = regularUserService.createUser(userDto);
+        Long userId = regularUserService.createUser(userCreationDto);
 
         if(userId == -1) {
-            throw new UniqueAlreadyExistsException("Username :" + userDto.getUsername() + ", already exists");
+            throw new UniqueAlreadyExistsException("Username: " + userCreationDto.getUsername() + ", already exists");
         }else if (userId == -2) {
-            throw new UniqueAlreadyExistsException("Email address:" + userDto.getEmailAddress() + ", already in use");
+            throw new UniqueAlreadyExistsException("Email address: " + userCreationDto.getEmailAddress() + ", already in use");
         }
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .replacePath("/user/{id}")
+                .replacePath("/users/{id}")
                 .buildAndExpand(userId).toUri();
 
         return ResponseEntity.created(location).build();
     }
 
-    @GetMapping("/user")
-    public String welcomeUser(){
-        return "Welcome!";
-    }
-
-    @GetMapping("/user/{id}")
+    @GetMapping("/users/{id}")
     public RegularUser goToPersonalPage(@PathVariable Long id){
         RegularUser user = regularUserService.findById(id);
+
         if(user == null)
             throw new EntityNotFoundException("User with id: " + id + ", not found.");
 
         return user;
     }
 
-    @PostMapping("/user/{id}/promote")
-    public ResponseEntity<Object> promoteToProfessional(@PathVariable Long id,
-                                                        @RequestBody RequestPromote requestPromote){
+    @GetMapping("/user")
+    public RegularUserDto goToPersonalPage(Authentication auth){
+        RegularUserDto regularUserDto = regularUserService.getRegularUserDto(auth.getName());
+
+        if(regularUserDto == null)
+            throw new EntityNotFoundException("username: " + auth.getName() + ", not found");
+
+        return regularUserDto;
+    }
+
+    @PostMapping("/user/promote")
+    public ResponseEntity<Object> promoteToProfessional(@RequestBody RequestPromote requestPromote,
+                                                        Authentication auth){
 
         // check if user is professional already
-        Long profId = regularUserService.promoteUser(requestPromote, id);
+        Long profId = regularUserService.promoteUser(requestPromote, auth.getName());
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .replacePath("/prof/{profId}")
+                .replacePath("/profs/{profId}")
                 .buildAndExpand(profId).toUri();
 
         return ResponseEntity.created(location).build();
     }
+
+//    @GetMapping("/user/wallet")
+//    public Wallet
 }
 
-/*
-TODO
-
-promoteToProffesional:
-- userId inside the userService.promoteUser() will be the id of the logged-in user
-- cant go to this page if you are an prof already
-
-goToPersonalPage:
-- should only go to personal wallet and account
-
-
- */

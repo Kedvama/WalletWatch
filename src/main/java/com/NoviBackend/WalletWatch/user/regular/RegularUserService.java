@@ -2,12 +2,12 @@ package com.NoviBackend.WalletWatch.user.regular;
 
 import com.NoviBackend.WalletWatch.request.RequestPromote;
 import com.NoviBackend.WalletWatch.security.AuthenticationService;
+import com.NoviBackend.WalletWatch.user.dto.RegularUserCreationDto;
 import com.NoviBackend.WalletWatch.user.dto.RegularUserDto;
 import com.NoviBackend.WalletWatch.user.mapper.UserMapper;
 import com.NoviBackend.WalletWatch.user.professional.ProfUserRepository;
 import com.NoviBackend.WalletWatch.user.professional.ProfUserService;
 import com.NoviBackend.WalletWatch.wallet.WalletService;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,7 +25,6 @@ public class RegularUserService {
     public RegularUserService(RegularUserRepository regularUserRepository,
                               WalletService walletService,
                               ProfUserService profUserService,
-                              ProfUserRepository profUserRepository,
                               UserMapper userMapper,
                               AuthenticationService authService){
         this.regularUserRepository = regularUserRepository;
@@ -48,7 +47,7 @@ public class RegularUserService {
         return regularUserRepository.findAll();
     }
 
-    public long usernameEmailCheck(RegularUserDto user) {
+    public long usernameEmailCheck(RegularUserCreationDto user) {
 
         if(regularUserRepository.existsRegularUserByUsername(user.getUsername())){
             return -1;
@@ -60,14 +59,14 @@ public class RegularUserService {
         return profUserService.existsByUserameAndEmail(user);
     }
 
-    public long createUser(RegularUserDto userDto){
+    public long createUser(RegularUserCreationDto userDto){
         Long id = usernameEmailCheck(userDto);
 
         if(id != 0)
             return id;
 
         // map to user if ok
-        RegularUser regularUser = userMapper.convertRegularUserDtoToRegularUser(userDto);
+        RegularUser regularUser = userMapper.convertRegularUserCreationDtoToRegularUser(userDto);
 
         // set wallet
         regularUser.setPersonalWallet(walletService.createWallet());
@@ -81,12 +80,40 @@ public class RegularUserService {
         return regularUser.getId();
     }
 
-    public Long promoteUser(RequestPromote request, long userId) {
-        RegularUser reUser = findById(userId);
-        Long profId = profUserService.createProfessionalUser(reUser, request);
-        removeRegularUser(reUser);
+    public Long promoteUser(RequestPromote request, String username) {
+        RegularUser regularUser = findByUsername(username);
+
+        if(regularUser == null){
+            return null;
+        }
+
+        Long profId = profUserService.createProfessionalUser(regularUser, request);
+        removeRegularUser(regularUser);
 
         return profId;
+    }
+
+    public RegularUser findByUsername(String username) {
+        Optional<RegularUser> user = regularUserRepository.findRegularUserByUsername(username);
+
+        if(user.isEmpty()){
+            return null;
+        }
+
+        return user.get();
+    }
+
+    public RegularUserDto getRegularUserDto(String username) {
+        RegularUser user = findByUsername(username);
+
+        if(user == null){
+            return null;
+        }
+
+        // map user to RegularUserDto
+        RegularUserDto userDto = userMapper.convertRegularUserToRegularUserDto(user);
+
+        return userDto;
     }
 }
 

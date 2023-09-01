@@ -1,5 +1,6 @@
 package com.NoviBackend.WalletWatch.user.mapper;
 
+import com.NoviBackend.WalletWatch.user.dto.RegularUserCreationDto;
 import com.NoviBackend.WalletWatch.user.dto.RegularUserDto;
 import com.NoviBackend.WalletWatch.user.professional.ProfessionalUser;
 import com.NoviBackend.WalletWatch.user.regular.RegularUser;
@@ -22,7 +23,11 @@ public class UserMapper {
         return modelMapper.map(professionalUser, RegularUser.class);
     }
 
-    public RegularUser convertRegularUserDtoToRegularUser(RegularUserDto regularUserDto){
+    public RegularUser convertRegularUserCreationDtoToRegularUser(RegularUserCreationDto regularUserDto){
         return modelMapper.map(regularUserDto, RegularUser.class);
+    }
+
+    public RegularUserDto convertRegularUserToRegularUserDto(RegularUser regularUser){
+        return modelMapper.map(regularUser, RegularUserDto.class);
     }
 }

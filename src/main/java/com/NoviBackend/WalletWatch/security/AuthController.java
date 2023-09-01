@@ -2,9 +2,6 @@ package com.NoviBackend.WalletWatch.security;
 
 import com.NoviBackend.WalletWatch.exception.InvalidLoginCredentials;
 import com.NoviBackend.WalletWatch.request.LoginRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.validation.annotation.Validated;

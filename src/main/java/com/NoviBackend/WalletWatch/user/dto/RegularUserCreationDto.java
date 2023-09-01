@@ -1,18 +1,22 @@
 package com.NoviBackend.WalletWatch.user.dto;
 
-public class RegularUserDto {
+import jakarta.validation.constraints.Email;
+
+public class RegularUserCreationDto {
     private String username;
+    private String password;
     private String firstName;
     private String surname;
+
+    @Email
     private String emailAddress;
-    private int subscriptionsAmount;
 
-    public RegularUserDto(){
-
+    public RegularUserCreationDto() {
     }
 
-    public RegularUserDto(String username, String firstName, String surname, String emailAddress) {
+    public RegularUserCreationDto(String username, String password, String firstName, String surname, String emailAddress) {
         this.username = username;
+        this.password = password;
         this.firstName = firstName;
         this.surname = surname;
         this.emailAddress = emailAddress;
@@ -24,6 +28,14 @@ public class RegularUserDto {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getFirstName() {
@@ -46,7 +58,7 @@ public class RegularUserDto {
         return emailAddress;
     }
 
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
+    public void setEmailAddress(String email) {
+        this.emailAddress = email;
     }
 }
