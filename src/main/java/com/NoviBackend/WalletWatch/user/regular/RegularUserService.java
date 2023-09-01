@@ -69,7 +69,7 @@ public class RegularUserService {
         // map to user if ok
         RegularUser regularUser = userMapper.convertRegularUserDtoToRegularUser(userDto);
 
-        // set walelt
+        // set wallet
         regularUser.setPersonalWallet(walletService.createWallet());
 
         // save to regular user
@@ -85,6 +85,7 @@ public class RegularUserService {
         RegularUser reUser = findById(userId);
         Long profId = profUserService.createProfessionalUser(reUser, request);
         removeRegularUser(reUser);
+
         return profId;
     }
 }

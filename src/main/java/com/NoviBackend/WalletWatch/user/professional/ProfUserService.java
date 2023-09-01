@@ -1,6 +1,7 @@
 package com.NoviBackend.WalletWatch.user.professional;
 
 import com.NoviBackend.WalletWatch.request.RequestPromote;
+import com.NoviBackend.WalletWatch.security.AuthenticationService;
 import com.NoviBackend.WalletWatch.user.dto.RegularUserDto;
 import com.NoviBackend.WalletWatch.user.mapper.UserMapper;
 import com.NoviBackend.WalletWatch.user.regular.RegularUser;
@@ -17,13 +18,16 @@ public class ProfUserService {
     private final ProfUserRepository profUserRepository;
     private final UserMapper userMapper;
     private final RegularUserRepository regularUserRepository;
+    private final AuthenticationService authenticationService;
 
     public ProfUserService(ProfUserRepository profUserRepository,
                            UserMapper userMapper,
-                           RegularUserRepository regularUserRepository){
+                           RegularUserRepository regularUserRepository,
+                           AuthenticationService authenticationService){
         this.profUserRepository = profUserRepository;
         this.userMapper = userMapper;
         this.regularUserRepository = regularUserRepository;
+        this.authenticationService = authenticationService;
     }
 
     // find
@@ -48,6 +52,9 @@ public class ProfUserService {
         // save into the profUser database
         profUserRepository.save(professionalUser);
 
+        // change authority to prof
+        authenticationService.changeRole(professionalUser.getUsername(), "ROLE_PROF", "ROLE_USER");
+
         return professionalUser.getId();
     }
 
@@ -69,6 +76,9 @@ public class ProfUserService {
 
         // save regularUser
         regularUserRepository.save(regularUser);
+
+        // change authority
+        authenticationService.changeRole(regularUser.getUsername(), "ROLE_USER", "ROLE_PROF");
 
         return regularUser.getId();
     }

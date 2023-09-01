@@ -8,7 +8,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class AuthenticationService {
@@ -51,5 +53,24 @@ public class AuthenticationService {
         user.addAuthorities(auth);
         securityUserRepository.save(user);
         authoritiesRepository.save(auth);
+    }
+
+    public void changeRole(String username, String newRole, String  oldRole){
+        // get user
+        SecurityUser user = findByUsername(username);
+
+        // find the authority
+        if(user != null){
+            Optional<Authority> optionalAuth = user.getAuthorities().stream()
+                    .filter(auth -> auth.getAuthority().equals(oldRole))
+                    .findFirst();
+
+            // change the authority
+            if(optionalAuth.isPresent()){
+                Authority auth = optionalAuth.get();
+                auth.setAuthority(newRole);
+                securityUserRepository.save(user);
+            }
+        }
     }
 }
