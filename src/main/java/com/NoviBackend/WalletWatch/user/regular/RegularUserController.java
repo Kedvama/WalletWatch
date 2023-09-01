@@ -3,6 +3,7 @@ package com.NoviBackend.WalletWatch.user.regular;
 import com.NoviBackend.WalletWatch.exception.EntityNotFoundException;
 import com.NoviBackend.WalletWatch.exception.UniqueAlreadyExistsException;
 import com.NoviBackend.WalletWatch.request.RequestPromote;
+import com.NoviBackend.WalletWatch.user.dto.RegularUserDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -24,6 +25,27 @@ public class RegularUserController {
         return regularUserService.findAllRegularUsers();
     }
 
+    @PostMapping("/users")
+    public ResponseEntity<Object> createUser(@RequestBody RegularUserDto userDto) {
+        // check username and password
+        regularUserService.usernameEmailCheck(userDto);
+
+        Long userId = regularUserService.createUser(userDto);
+
+        if(userId == -1) {
+            throw new UniqueAlreadyExistsException("Username :" + userDto.getUsername() + ", already exists");
+        }else if (userId == -2) {
+            throw new UniqueAlreadyExistsException("Email address:" + userDto.getEmailAddress() + ", already in use");
+        }
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .replacePath("/user/{id}")
+                .buildAndExpand(userId).toUri();
+
+        return ResponseEntity.created(location).build();
+    }
+
     @GetMapping("/user")
     public String welcomeUser(){
         return "Welcome!";
@@ -36,24 +58,6 @@ public class RegularUserController {
             throw new EntityNotFoundException("User with id: " + id + ", not found.");
 
         return user;
-    }
-
-    @PostMapping("/users")
-    public ResponseEntity<Object> createUser(@RequestBody RegularUser user) {
-        Long userId = regularUserService.createUser(user);
-
-        if(userId == -1) {
-            throw new UniqueAlreadyExistsException("Username :" + user.getUsername() + ", already exists");
-        }else if (userId == -2) {
-            throw new UniqueAlreadyExistsException("Email address:" + user.getEmailAddress() + ", already in use");
-        }
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .replacePath("/user/{id}")
-                .buildAndExpand(userId).toUri();
-
-        return ResponseEntity.created(location).build();
     }
 
     @PostMapping("/user/{id}/promote")

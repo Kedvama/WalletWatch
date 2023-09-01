@@ -53,14 +53,13 @@ public class SpringSecurityConfig {
                 .cors().and()
                 .authorizeHttpRequests()
                 .requestMatchers(HttpMethod.GET, "/info").hasRole("USER")
-                .requestMatchers("/users/**").hasAnyRole("ADMIN", "USER")
-                .requestMatchers("/admins").hasAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/users/{id}").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.POST,"/create").permitAll()
-                .requestMatchers(HttpMethod.POST, "/login").permitAll()
-                .requestMatchers(HttpMethod.POST, "/authentication").permitAll()
+                .requestMatchers(HttpMethod.POST,"/users").permitAll()
+                .requestMatchers("/admins").hasAuthority("ROLE_ADMIN")
+                .requestMatchers(HttpMethod.POST, "/auth").permitAll()
                 .requestMatchers(HttpMethod.GET, "/wallets").hasRole("USER")
                 .requestMatchers(HttpMethod.GET, "/test").hasRole("USER")
+                .requestMatchers(HttpMethod.GET, "/users").hasRole("USER")
 
                 .anyRequest().denyAll()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

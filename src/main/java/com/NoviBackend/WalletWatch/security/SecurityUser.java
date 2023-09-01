@@ -57,4 +57,8 @@ public class SecurityUser {
     public void setAuthorities(Set<Authority> authorities) {
         this.authorities = authorities;
     }
+
+    public void addAuthorities(Authority authority){
+        this.authorities.add(authority);
+    }
 }

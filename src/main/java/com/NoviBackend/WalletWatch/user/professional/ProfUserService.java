@@ -1,8 +1,10 @@
 package com.NoviBackend.WalletWatch.user.professional;
 
 import com.NoviBackend.WalletWatch.request.RequestPromote;
+import com.NoviBackend.WalletWatch.user.dto.RegularUserDto;
 import com.NoviBackend.WalletWatch.user.mapper.UserMapper;
 import com.NoviBackend.WalletWatch.user.regular.RegularUser;
+import com.NoviBackend.WalletWatch.user.regular.RegularUserRepository;
 import com.NoviBackend.WalletWatch.user.regular.RegularUserService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -14,14 +16,14 @@ import java.util.Optional;
 public class ProfUserService {
     private final ProfUserRepository profUserRepository;
     private final UserMapper userMapper;
-    private final RegularUserService  regularUserService;
+    private final RegularUserRepository regularUserRepository;
 
     public ProfUserService(ProfUserRepository profUserRepository,
                            UserMapper userMapper,
-                           @Lazy RegularUserService regularUserService){
+                           RegularUserRepository regularUserRepository){
         this.profUserRepository = profUserRepository;
         this.userMapper = userMapper;
-        this.regularUserService = regularUserService;
+        this.regularUserRepository = regularUserRepository;
     }
 
     // find
@@ -54,7 +56,6 @@ public class ProfUserService {
         profUserRepository.delete(professionalUser);
     }
 
-
     // methods
     public Long demoteProfToRegularUser(Long profId){
         // get professionalUser
@@ -66,14 +67,13 @@ public class ProfUserService {
         // delete prof
         deleteProfessionalUser(prof);
 
-        // create regularUser
-        regularUserService.createUser(regularUser);
+        // save regularUser
+        regularUserRepository.save(regularUser);
 
         return regularUser.getId();
     }
 
-
-    public int existsByUserameAndEmail(RegularUser user) {
+    public int existsByUserameAndEmail(RegularUserDto user) {
         if(profUserRepository.existsProfessionalUserByUsername(user.getUsername())){
             return -1;
         } else if (profUserRepository.existsProfessionalUserByEmailAddress(user.getEmailAddress())) {
