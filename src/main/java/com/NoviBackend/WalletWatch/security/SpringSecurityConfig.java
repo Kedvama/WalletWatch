@@ -60,6 +60,9 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/wallets").hasRole("USER")
                 .requestMatchers(HttpMethod.GET, "/test").hasRole("USER")
                 .requestMatchers(HttpMethod.GET, "/users").hasRole("USER")
+                .requestMatchers(HttpMethod.POST, "/user/{id}/promote").permitAll()
+                .requestMatchers(HttpMethod.POST, "/prof/{profId}/demote").permitAll()
+                .requestMatchers(HttpMethod.GET, "/profs").permitAll()
 
                 .anyRequest().denyAll()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
