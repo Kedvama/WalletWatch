@@ -1,6 +1,10 @@
 package com.NoviBackend.WalletWatch.security;
 
+import com.NoviBackend.WalletWatch.exception.InvalidLoginCredentials;
 import com.NoviBackend.WalletWatch.request.LoginRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.validation.annotation.Validated;
@@ -25,11 +29,11 @@ public class AuthController {
 
     }
 
-    @PostMapping("/authentication")
+    @PostMapping("/auth")
     public String login(@RequestBody @Validated LoginRequest request){
 
         if(!authenticationService.checkCredentials(request)){
-            return "invalid login credentials";
+            throw new InvalidLoginCredentials("Invalid login credentials");
         }
 
         return jwtUtil.generateToken(jdbcUserDetailsManager.loadUserByUsername(request.getUsername()));
