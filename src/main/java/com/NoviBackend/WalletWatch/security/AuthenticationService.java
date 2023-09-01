@@ -1,16 +1,11 @@
 package com.NoviBackend.WalletWatch.security;
 
 import com.NoviBackend.WalletWatch.request.LoginRequest;
-import com.NoviBackend.WalletWatch.security.mapper.SecurityUserMapper;
-import com.NoviBackend.WalletWatch.user.dto.RegularUserDto;
-import org.modelmapper.ModelMapper;
+import com.NoviBackend.WalletWatch.user.dto.RegularUserCreationDto;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class AuthenticationService {
@@ -43,7 +38,7 @@ public class AuthenticationService {
         return matches;
     }
 
-    public void saveRegularUser(RegularUserDto userDto) {
+    public void saveRegularUser(RegularUserCreationDto userDto) {
         SecurityUser user = new SecurityUser();
         user.setUsername(userDto.getUsername());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));

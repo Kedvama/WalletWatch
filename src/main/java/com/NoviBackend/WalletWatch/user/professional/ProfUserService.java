@@ -2,12 +2,10 @@ package com.NoviBackend.WalletWatch.user.professional;
 
 import com.NoviBackend.WalletWatch.request.RequestPromote;
 import com.NoviBackend.WalletWatch.security.AuthenticationService;
-import com.NoviBackend.WalletWatch.user.dto.RegularUserDto;
+import com.NoviBackend.WalletWatch.user.dto.RegularUserCreationDto;
 import com.NoviBackend.WalletWatch.user.mapper.UserMapper;
 import com.NoviBackend.WalletWatch.user.regular.RegularUser;
 import com.NoviBackend.WalletWatch.user.regular.RegularUserRepository;
-import com.NoviBackend.WalletWatch.user.regular.RegularUserService;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -83,7 +81,7 @@ public class ProfUserService {
         return regularUser.getId();
     }
 
-    public int existsByUserameAndEmail(RegularUserDto user) {
+    public int existsByUserameAndEmail(RegularUserCreationDto user) {
         if(profUserRepository.existsProfessionalUserByUsername(user.getUsername())){
             return -1;
         } else if (profUserRepository.existsProfessionalUserByEmailAddress(user.getEmailAddress())) {
