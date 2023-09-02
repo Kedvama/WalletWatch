@@ -5,7 +5,6 @@ import com.NoviBackend.WalletWatch.security.AuthenticationService;
 import com.NoviBackend.WalletWatch.user.dto.RegularUserCreationDto;
 import com.NoviBackend.WalletWatch.user.dto.RegularUserDto;
 import com.NoviBackend.WalletWatch.user.mapper.UserMapper;
-import com.NoviBackend.WalletWatch.user.professional.ProfUserRepository;
 import com.NoviBackend.WalletWatch.user.professional.ProfUserService;
 import com.NoviBackend.WalletWatch.wallet.WalletService;
 import org.springframework.stereotype.Service;
@@ -34,31 +33,6 @@ public class RegularUserService {
         this.authService = authService;
     }
 
-    public void removeRegularUser(RegularUser user){
-        regularUserRepository.delete(user);
-    }
-
-    public RegularUser findById(Long id) {
-        Optional<RegularUser> user = regularUserRepository.findById(id);
-        return user.orElse(null);
-    }
-
-    public List<RegularUser> findAllRegularUsers() {
-        return regularUserRepository.findAll();
-    }
-
-    public long usernameEmailCheck(RegularUserCreationDto user) {
-
-        if(regularUserRepository.existsRegularUserByUsername(user.getUsername())){
-            return -1;
-        } else if (regularUserRepository.existsRegularUserByEmailAddress(user.getEmailAddress())) {
-            return -2;
-        }
-
-        // check if username or email in ProfessionalUser
-        return profUserService.existsByUserameAndEmail(user);
-    }
-
     public long createUser(RegularUserCreationDto userDto){
         Long id = usernameEmailCheck(userDto);
 
@@ -80,17 +54,13 @@ public class RegularUserService {
         return regularUser.getId();
     }
 
-    public Long promoteUser(RequestPromote request, String username) {
-        RegularUser regularUser = findByUsername(username);
+    public void removeRegularUser(RegularUser user){
+        regularUserRepository.delete(user);
+    }
 
-        if(regularUser == null){
-            return null;
-        }
-
-        Long profId = profUserService.createProfessionalUser(regularUser, request);
-        removeRegularUser(regularUser);
-
-        return profId;
+    public RegularUser findById(Long id) {
+        Optional<RegularUser> user = regularUserRepository.findById(id);
+        return user.orElse(null);
     }
 
     public RegularUser findByUsername(String username) {
@@ -101,6 +71,22 @@ public class RegularUserService {
         }
 
         return user.get();
+    }
+
+    public List<RegularUser> findAllRegularUsers() {
+        return regularUserRepository.findAll();
+    }
+
+    public long usernameEmailCheck(RegularUserCreationDto user) {
+
+        if(regularUserRepository.existsRegularUserByUsername(user.getUsername())){
+            return -1;
+        } else if (regularUserRepository.existsRegularUserByEmailAddress(user.getEmailAddress())) {
+            return -2;
+        }
+
+        // check if username or email in ProfessionalUser
+        return profUserService.existsByUserameAndEmail(user);
     }
 
     public RegularUserDto getRegularUserDto(String username) {
@@ -114,6 +100,19 @@ public class RegularUserService {
         RegularUserDto userDto = userMapper.convertRegularUserToRegularUserDto(user);
 
         return userDto;
+    }
+
+    public Long promoteUser(RequestPromote request, String username) {
+        RegularUser regularUser = findByUsername(username);
+
+        if(regularUser == null){
+            return null;
+        }
+
+        Long profId = profUserService.createProfessionalUser(regularUser, request);
+        removeRegularUser(regularUser);
+
+        return profId;
     }
 }
 
