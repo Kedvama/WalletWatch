@@ -28,6 +28,16 @@ public class RegularUserController {
         return regularUserService.findAllRegularUsers();
     }
 
+    @GetMapping("/users/{id}")
+    public RegularUser goToPersonalPage(@PathVariable Long id){
+        RegularUser user = regularUserService.findById(id);
+
+        if(user == null)
+            throw new EntityNotFoundException("User with id: " + id + ", not found.");
+
+        return user;
+    }
+
     @PostMapping("/users")
     public ResponseEntity<Object> createUser(@RequestBody RegularUserCreationDto userCreationDto) {
         // check username and password
@@ -47,16 +57,6 @@ public class RegularUserController {
                 .buildAndExpand(userId).toUri();
 
         return ResponseEntity.created(location).build();
-    }
-
-    @GetMapping("/users/{id}")
-    public RegularUser goToPersonalPage(@PathVariable Long id){
-        RegularUser user = regularUserService.findById(id);
-
-        if(user == null)
-            throw new EntityNotFoundException("User with id: " + id + ", not found.");
-
-        return user;
     }
 
     @GetMapping("/user")
