@@ -1,7 +1,11 @@
 package com.NoviBackend.WalletWatch.wallet;
 
+import com.NoviBackend.WalletWatch.user.regular.RegularUser;
+import com.NoviBackend.WalletWatch.user.regular.RegularUserService;
+import com.NoviBackend.WalletWatch.wallet.dto.RegularPersonalWalletDto;
 import com.NoviBackend.WalletWatch.wallet.dto.WalletDto;
 import com.NoviBackend.WalletWatch.wallet.mapper.WalletMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,11 +16,19 @@ public class WalletService {
 
     private final WalletRepository walletRepository;
     private final WalletMapper walletMapper;
+    private final RegularUserService regularUserService;
 
     public WalletService(WalletRepository walletRepository,
-                         WalletMapper walletMapper){
+                         WalletMapper walletMapper,
+                         @Lazy RegularUserService regularUserService){
         this.walletRepository = walletRepository;
         this.walletMapper = walletMapper;
+        this.regularUserService = regularUserService;
+    }
+
+    public Wallet findPublicById(int id) {
+        Optional<Wallet> wallet = walletRepository.findWalletBySharedIsTrueAndId(id);
+        return wallet.orElse(null);
     }
 
     public List<WalletDto> getAllPublicWallets() {
@@ -28,16 +40,6 @@ public class WalletService {
         return walletMapper.convertWalletToDtoList(walletList);
     }
 
-    public Wallet findPublicById(int id) {
-        Optional<Wallet> wallet = walletRepository.findWalletBySharedIsTrueAndId(id);
-        return wallet.orElse(null);
-    }
-
-    public Wallet saveWallet(Wallet wallet){
-        walletRepository.save(wallet);
-        return wallet;
-    }
-
     public Wallet createWallet(){
         Wallet wallet = new Wallet();
         walletRepository.save(wallet);
@@ -45,7 +47,17 @@ public class WalletService {
         return wallet;
     }
 
-    public void deleteWallet(Wallet wallet){
-        walletRepository.delete(wallet);
+    public RegularPersonalWalletDto getRegularPersonalWalletDto(String username) {
+        RegularUser regularUser = regularUserService.findByUsername(username);
+
+        if(regularUser == null){
+            return null;
+        }
+
+        RegularPersonalWalletDto walletDto = walletMapper.convertWalletToRegularWalletDto(
+                regularUser.getPersonalWallet()
+        );
+
+        return walletDto;
     }
 }

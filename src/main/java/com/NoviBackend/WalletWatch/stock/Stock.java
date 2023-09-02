@@ -4,6 +4,8 @@ import com.NoviBackend.WalletWatch.wallet.Wallet;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
+
 @Entity(name = "Stocks")
 public class Stock {
 
@@ -16,22 +18,22 @@ public class Stock {
     private String stockName;
 
     @Column
-    private String type;
+    private BigDecimal value;
 
     @Column
-    private int value;
+    private Long amount;
 
     @Column
-    private int buyLimit;
+    private BigDecimal buyLimit;
 
     @Column
-    private int sellLimit;
+    private BigDecimal sellLimit;
 
     @Column
     private String notations;
 
     @Column
-    private float percentageGoal;
+    private BigDecimal percentageGoal;
 
     @ManyToOne
     @JoinColumn(name="wallet_id", nullable = false)
@@ -41,9 +43,10 @@ public class Stock {
     // Constructor
     public Stock(){}
 
-    public Stock(String stockName, String type, int value, int buyLimit, int sellLimit, String notations, float percentageGoal) {
+    public Stock(String stockName, BigDecimal value,
+                 BigDecimal buyLimit, BigDecimal sellLimit,
+                 String notations, BigDecimal percentageGoal) {
         this.stockName = stockName;
-        this.type = type;
         this.value = value;
         this.buyLimit = buyLimit;
         this.sellLimit = sellLimit;
@@ -51,9 +54,12 @@ public class Stock {
         this.percentageGoal = percentageGoal;
     }
 
-    // Getters & Setters
-    public Long getId(){
+    public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getStockName() {
@@ -64,35 +70,35 @@ public class Stock {
         this.stockName = stockName;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public int getValue() {
+    public BigDecimal getValue() {
         return value;
     }
 
-    public void setValue(int value) {
+    public void setValue(BigDecimal value) {
         this.value = value;
     }
 
-    public int getBuyLimit() {
+    public Long getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Long amount) {
+        this.amount = amount;
+    }
+
+    public BigDecimal getBuyLimit() {
         return buyLimit;
     }
 
-    public void setBuyLimit(int buyLimit) {
+    public void setBuyLimit(BigDecimal buyLimit) {
         this.buyLimit = buyLimit;
     }
 
-    public int getSellLimit() {
+    public BigDecimal getSellLimit() {
         return sellLimit;
     }
 
-    public void setSellLimit(int sellLimit) {
+    public void setSellLimit(BigDecimal sellLimit) {
         this.sellLimit = sellLimit;
     }
 
@@ -104,11 +110,11 @@ public class Stock {
         this.notations = notations;
     }
 
-    public float getPercentageGoal() {
+    public BigDecimal getPercentageGoal() {
         return percentageGoal;
     }
 
-    public void setPercentageGoal(float percentageGoal) {
+    public void setPercentageGoal(BigDecimal percentageGoal) {
         this.percentageGoal = percentageGoal;
     }
 
@@ -118,19 +124,5 @@ public class Stock {
 
     public void setWallet(Wallet wallet) {
         this.wallet = wallet;
-    }
-
-    @Override
-    public String toString() {
-        return "Stock{" +
-                "id=" + id +
-                ", stockName='" + stockName + '\'' +
-                ", type='" + type + '\'' +
-                ", value=" + value +
-                ", buyLimit=" + buyLimit +
-                ", sellLimit=" + sellLimit +
-                ", notations='" + notations + '\'' +
-                ", percentageGoal=" + percentageGoal +
-                '}';
     }
 }

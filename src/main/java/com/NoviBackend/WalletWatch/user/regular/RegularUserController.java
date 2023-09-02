@@ -83,8 +83,5 @@ public class RegularUserController {
 
         return ResponseEntity.created(location).build();
     }
-
-//    @GetMapping("/user/wallet")
-//    public Wallet
 }
 
