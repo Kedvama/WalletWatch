@@ -1,5 +1,6 @@
 package com.NoviBackend.WalletWatch.wallet.mapper;
 
+import com.NoviBackend.WalletWatch.wallet.dto.RegularPersonalWalletDto;
 import com.NoviBackend.WalletWatch.wallet.dto.WalletDto;
 import com.NoviBackend.WalletWatch.wallet.Wallet;
 import org.modelmapper.ModelMapper;
@@ -23,10 +24,6 @@ public class WalletMapper {
     public List<WalletDto> convertWalletToDtoList(List<Wallet> wallet){
         List<WalletDto> walletDtoList = new ArrayList<>();
 
-        // loop through the list of wallets,
-        // map them to a WalletDto and
-        // add them to the list
-        // return list with dto's
         for(Wallet w: wallet){
             walletDtoList.add(modelMapper.map(w, WalletDto.class));
         }
@@ -36,5 +33,9 @@ public class WalletMapper {
 
     public Wallet convertDtoToWallet(WalletDto walletDto){
         return modelMapper.map(walletDto, Wallet.class);
+    }
+
+    public RegularPersonalWalletDto convertWalletToRegularWalletDto(Wallet wallet){
+        return modelMapper.map(wallet, RegularPersonalWalletDto.class);
     }
 }
