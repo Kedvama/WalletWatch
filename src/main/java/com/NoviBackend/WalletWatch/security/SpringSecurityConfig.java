@@ -65,7 +65,9 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/profs").permitAll()
                 .requestMatchers(HttpMethod.GET, "/user").hasRole("USER")
                 .requestMatchers(HttpMethod.GET, "/user/**").hasRole("USER")
-
+                .requestMatchers(HttpMethod.GET, "/stocks").permitAll()
+                .requestMatchers(HttpMethod.POST, "/stocks").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "/stocks").permitAll()
 
                 .anyRequest().denyAll()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
