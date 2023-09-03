@@ -2,6 +2,8 @@ package com.NoviBackend.WalletWatch.user.professional;
 
 import com.NoviBackend.WalletWatch.request.RequestPromote;
 import com.NoviBackend.WalletWatch.security.AuthenticationService;
+import com.NoviBackend.WalletWatch.subscription.SubscriptionRepository;
+import com.NoviBackend.WalletWatch.user.dto.PersonalProfessionalUserDto;
 import com.NoviBackend.WalletWatch.user.dto.ProfessionalUsersDto;
 import com.NoviBackend.WalletWatch.user.dto.RegularUserCreationDto;
 import com.NoviBackend.WalletWatch.user.mapper.UserMapper;
@@ -18,15 +20,18 @@ public class ProfUserService {
     private final UserMapper userMapper;
     private final RegularUserRepository regularUserRepository;
     private final AuthenticationService authenticationService;
+    private final SubscriptionRepository subscriptionRepository;
 
     public ProfUserService(ProfUserRepository profUserRepository,
                            UserMapper userMapper,
                            RegularUserRepository regularUserRepository,
-                           AuthenticationService authenticationService){
+                           AuthenticationService authenticationService,
+                           SubscriptionRepository subscriptionRepository){
         this.profUserRepository = profUserRepository;
-        this.userMapper = userMapper;
         this.regularUserRepository = regularUserRepository;
         this.authenticationService = authenticationService;
+        this.subscriptionRepository = subscriptionRepository;
+        this.userMapper = userMapper;
     }
 
     // find
@@ -44,6 +49,16 @@ public class ProfUserService {
     public ProfessionalUser findProfById(Long id) {
         Optional<ProfessionalUser> prof = profUserRepository.findById(id);
         return prof.orElse(null);
+    }
+
+    public ProfessionalUser findProfByUsername(String username){
+        Optional<ProfessionalUser> prof = profUserRepository.findProfessionalUserByUsername(username);
+
+        if(prof == null){
+            return null;
+        }
+
+        return prof.get();
     }
 
     // create
@@ -107,5 +122,20 @@ public class ProfUserService {
         }
 
         return user.get();
+    }
+
+    public PersonalProfessionalUserDto getProfProfile(String username) {
+        ProfessionalUser prof = findProfByUsername(username);
+
+        if(prof == null){
+            return null;
+        }
+
+        PersonalProfessionalUserDto profDto = userMapper.convertProfToPersonalProfDto(prof);
+        profDto.setSubscriptionsQuantity(
+                subscriptionRepository.countByWallet(
+                        prof.getPersonalWallet()));
+
+        return profDto;
     }
 }

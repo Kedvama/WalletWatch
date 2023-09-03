@@ -32,7 +32,7 @@ public abstract class AbstractUsers {
     private Wallet personalWallet;
 
     @OneToMany
-    @JoinColumn(name="user_id")
+    @JoinColumn(name="subscriber_id")
     private Set<Subscription> subscriptions;
 
 
