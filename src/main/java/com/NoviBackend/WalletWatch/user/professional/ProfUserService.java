@@ -90,4 +90,14 @@ public class ProfUserService {
             return 0;
         }
     }
+
+    public ProfessionalUser findByUsername(String username) {
+        Optional<ProfessionalUser> user = profUserRepository.findProfessionalUserByUsername(username);
+
+        if(user.isEmpty()){
+            return null;
+        }
+
+        return user.get();
+    }
 }

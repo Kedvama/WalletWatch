@@ -47,19 +47,8 @@ public class Wallet {
         this.stocks = stocks;
     }
 
-    @Override
-    public String toString() {
-        return "Wallet{" +
-                "id=" + id +
-                ", shared=" + shared +
-                ", stocks=" + stocks +
-                '}';
+    public void addStock(Stock stock){
+        this.stocks.add(stock);
     }
 }
 
-// could add:
-// - amount stocks
-// - amount followers
-// and more to the Wallet or WalletDto, so people could get some more info
-// about the wallet before they subscribe.
-// add stock inside here

@@ -1,79 +1,31 @@
-package com.NoviBackend.WalletWatch.stock;
+package com.NoviBackend.WalletWatch.stock.stockdto;
 
-import com.NoviBackend.WalletWatch.wallet.Wallet;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
 
 import java.math.BigDecimal;
 
-@Entity(name = "Stocks")
-public class Stock {
-
-    // Attributes
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column
+public class StockDto {
     private String stockName;
-
-    @Column
     private BigDecimal value;
-
-    @Column
     private Long quantity;
-
-    @Column
     private BigDecimal buyLimit;
-
-    @Column
     private BigDecimal sellLimit;
-
-    @Column
     private String notations;
-
-    @Column
     private BigDecimal percentageGoal;
-
-    @Column
     private String action;
 
-    @ManyToOne
-    @JoinColumn(name="wallet_id", nullable = false)
-    @JsonIgnore
-    private Wallet wallet;
+    public StockDto() {
+    }
 
-    // Constructor
-    public Stock(){}
-
-    public Stock(String stockName, BigDecimal value,
-                 BigDecimal buyLimit, BigDecimal sellLimit,
-                 String notations, BigDecimal percentageGoal,
-                 Long quantity) {
+    public StockDto(String stockName, BigDecimal value, Long quantity, BigDecimal buyLimit, BigDecimal sellLimit, String notations, BigDecimal percentageGoal, String action) {
         this.stockName = stockName;
         this.value = value;
+        this.quantity = quantity;
         this.buyLimit = buyLimit;
         this.sellLimit = sellLimit;
         this.notations = notations;
         this.percentageGoal = percentageGoal;
-        this.quantity = quantity;
-    }
-
-    public Stock(String stockName, BigDecimal value,
-                 Long quantity, BigDecimal buyLimit,
-                 BigDecimal sellLimit, String notations,
-                 BigDecimal percentageGoal, String action) {
-
-        this(stockName, value, buyLimit, sellLimit, notations, percentageGoal, quantity);
         this.action = action;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getStockName() {
@@ -130,14 +82,6 @@ public class Stock {
 
     public void setPercentageGoal(BigDecimal percentageGoal) {
         this.percentageGoal = percentageGoal;
-    }
-
-    public Wallet getWallet() {
-        return wallet;
-    }
-
-    public void setWallet(Wallet wallet) {
-        this.wallet = wallet;
     }
 
     public String getAction() {

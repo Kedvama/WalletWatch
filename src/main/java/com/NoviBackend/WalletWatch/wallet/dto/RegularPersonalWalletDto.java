@@ -7,7 +7,7 @@ import java.util.List;
 
 public class RegularPersonalWalletDto {
     private Long id;
-    private Long amount;
+    private Long quantity;
     private BigDecimal value;
     private List<Stock> stocks;
 
@@ -27,12 +27,12 @@ public class RegularPersonalWalletDto {
         this.id = id;
     }
 
-    public Long getAmount() {
-        return amount;
+    public Long getQuantity() {
+        return quantity;
     }
 
-    public void setAmount(Long amount) {
-        this.amount = amount;
+    public void setQuantity(Long quantity) {
+        this.quantity = quantity;
     }
 
     public BigDecimal getValue() {
@@ -54,7 +54,7 @@ public class RegularPersonalWalletDto {
                 totalValue  =  totalValue
                         .add(stock.getValue()
                         .multiply(new BigDecimal(
-                                stock.getAmount())));
+                                stock.getQuantity())));
             }
             this.value = totalValue;
         }
@@ -68,7 +68,7 @@ public class RegularPersonalWalletDto {
         this.stocks = stocks;
 
         // also set amout of stocks
-        setAmount((long) stocks.size());
+        setQuantity((long) stocks.size());
 
         // and set value of wallet
         setValue(stocks);
