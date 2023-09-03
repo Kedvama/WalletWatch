@@ -2,6 +2,7 @@ package com.NoviBackend.WalletWatch.user.professional;
 
 import com.NoviBackend.WalletWatch.request.RequestPromote;
 import com.NoviBackend.WalletWatch.security.AuthenticationService;
+import com.NoviBackend.WalletWatch.user.dto.ProfessionalUsersDto;
 import com.NoviBackend.WalletWatch.user.dto.RegularUserCreationDto;
 import com.NoviBackend.WalletWatch.user.mapper.UserMapper;
 import com.NoviBackend.WalletWatch.user.regular.RegularUser;
@@ -29,8 +30,15 @@ public class ProfUserService {
     }
 
     // find
-    public List<ProfessionalUser> findAllProfs() {
-        return profUserRepository.findAll();
+    public List<ProfessionalUsersDto> findAllProfsDto() {
+        List<ProfessionalUser>  listProfessionals = profUserRepository.findAll();
+
+        // map users to Dto's
+        if(listProfessionals == null){
+            return null;
+        }
+
+        return userMapper.convertListProfToListProfDto(listProfessionals);
     }
 
     public ProfessionalUser findProfById(Long id) {

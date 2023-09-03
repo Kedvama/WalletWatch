@@ -1,6 +1,8 @@
 package com.NoviBackend.WalletWatch.user.professional;
 
+import com.NoviBackend.WalletWatch.exception.EntityNotFoundException;
 import com.NoviBackend.WalletWatch.request.RequestDemote;
+import com.NoviBackend.WalletWatch.user.dto.ProfessionalUsersDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -17,8 +19,13 @@ public class ProfUserController {
     }
 
     @GetMapping("/profs")
-    public List<ProfessionalUser> getAllUsers(){
-        return profUserService.findAllProfs();
+    public List<ProfessionalUsersDto> getAllProfessionals(){
+        List<ProfessionalUsersDto> listProfDto = profUserService.findAllProfsDto();
+
+        if(listProfDto == null){
+            throw new EntityNotFoundException("No professional found");
+        }
+        return listProfDto;
     }
 
 
