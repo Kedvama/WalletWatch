@@ -4,10 +4,7 @@ import com.NoviBackend.WalletWatch.stock.mapper.StockMapper;
 import com.NoviBackend.WalletWatch.stock.stockdto.StockDto;
 import com.NoviBackend.WalletWatch.user.AbstractUsers;
 import com.NoviBackend.WalletWatch.user.professional.ProfUserService;
-import com.NoviBackend.WalletWatch.user.professional.ProfessionalUser;
-import com.NoviBackend.WalletWatch.user.regular.RegularUser;
 import com.NoviBackend.WalletWatch.user.regular.RegularUserService;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +33,7 @@ public class StockService {
 
     public List<Stock> getYourStocks(String username, Collection<? extends GrantedAuthority> authorities) {
         // get regular or prof
-        AbstractUsers user = userOrProf(authorities, username);
+        AbstractUsers user = smallUserProfFactory(authorities, username);
 
         if(user == null){
             return null;
@@ -46,7 +43,7 @@ public class StockService {
     }
 
     public Stock getStock(String username, Collection<? extends GrantedAuthority> authorities, Long stockId) {
-        AbstractUsers user = userOrProf(authorities, username);
+        AbstractUsers user = smallUserProfFactory(authorities, username);
 
         if(user == null){
             return null;
@@ -69,7 +66,7 @@ public class StockService {
     public Long addStock(String username, Collection<? extends GrantedAuthority> authorities, StockDto stockDto) {
         // map stockDto to stock
         Stock stock = stockMapper.convertStockDtoToStock(stockDto);
-        AbstractUsers user = userOrProf(authorities, username);
+        AbstractUsers user = smallUserProfFactory(authorities, username);
 
         if(user == null){
             return null;
@@ -85,7 +82,7 @@ public class StockService {
         return stock.getId();
     }
 
-    public AbstractUsers userOrProf(Collection<? extends GrantedAuthority> authorities, String username){
+    public AbstractUsers smallUserProfFactory(Collection<? extends GrantedAuthority> authorities, String username){
 
         if(authorities.stream().anyMatch(ga -> ga.getAuthority().equals("ROLE_USER"))){
             return regularUserService.findByUsername(username);
