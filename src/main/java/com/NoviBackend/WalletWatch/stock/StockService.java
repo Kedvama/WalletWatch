@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 @Service
 public class StockService {
@@ -43,10 +45,35 @@ public class StockService {
         return user.getPersonalWallet().getStocks();
     }
 
+    public Stock getStock(String username, Collection<? extends GrantedAuthority> authorities, Long stockId) {
+        AbstractUsers user = userOrProf(authorities, username);
+
+        if(user == null){
+            return null;
+        }
+
+        Predicate<? super Stock> predicate =
+                stock -> stock.getId().equals(stockId);
+        Optional<Stock> optionalStock = user.getPersonalWallet()
+                .getStocks().stream()
+                .filter(predicate)
+                .findFirst();
+
+        if(optionalStock.isEmpty()){
+            return null;
+        }
+
+        return optionalStock.get();
+    }
+
     public Long addStock(String username, Collection<? extends GrantedAuthority> authorities, StockDto stockDto) {
         // map stockDto to stock
         Stock stock = stockMapper.convertStockDtoToStock(stockDto);
         AbstractUsers user = userOrProf(authorities, username);
+
+        if(user == null){
+            return null;
+        }
 
         // set stock wallet
         stock.setWallet(user.getPersonalWallet());
