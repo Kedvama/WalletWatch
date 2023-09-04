@@ -75,7 +75,7 @@ public class ProfUserService {
         professionalUser.setCompany(request.getCompany());
         professionalUser.setShortIntroduction(request.getIntroduction());
 
-        // save into the profUser database
+        regularUserRepository.delete(regularUser);
         profUserRepository.save(professionalUser);
 
         // change authority to prof

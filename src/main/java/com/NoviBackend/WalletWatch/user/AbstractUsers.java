@@ -7,12 +7,13 @@ import jakarta.validation.constraints.Email;
 
 import java.util.Set;
 
-@MappedSuperclass
+@Entity
+@Inheritance(strategy =  InheritanceType.JOINED)
 public abstract class AbstractUsers {
 
     // attributes
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -46,7 +47,6 @@ public abstract class AbstractUsers {
         this.surname = surname;
         this.emailAddress = emailAddress;
         this.personalWallet = new Wallet();
-        // wallet needs to be saved.
     }
 
 
