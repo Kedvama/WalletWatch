@@ -5,6 +5,7 @@ import com.NoviBackend.WalletWatch.wallet.Wallet;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -33,8 +34,8 @@ public abstract class AbstractUsers {
     private Wallet personalWallet;
 
     @OneToMany
-    @JoinColumn(name="subscriber_id")
-    private Set<Subscription> subscriptions;
+    @JoinColumn(name = "subscribed_user_id")
+    private List<Subscription> subscriptions;
 
 
     // constructor
@@ -95,7 +96,7 @@ public abstract class AbstractUsers {
         this.personalWallet = wallet;
     }
 
-    public Set<Subscription> getSubscriptions() {
+    public List<Subscription> getSubscriptions() {
         return subscriptions;
     }
 
