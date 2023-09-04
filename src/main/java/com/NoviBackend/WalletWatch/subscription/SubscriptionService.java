@@ -22,4 +22,8 @@ public class SubscriptionService {
         RegularUser user = regularUserService.findByUsername(name);
         return user.getSubscriptions();
     }
+
+    public List<Subscription> getAllSharedProfs() {
+        return null;
+    }
 }

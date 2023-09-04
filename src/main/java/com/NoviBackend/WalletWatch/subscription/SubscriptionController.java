@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Set;
+
 
 @RestController
 public class SubscriptionController {
@@ -15,8 +15,15 @@ public class SubscriptionController {
         this.subscriptionService = subscriptionService;
     }
 
+    @GetMapping("/subscriptions")
+    public List<Subscription> getAllsharedWallets(){
+        List<Subscription> subs = subscriptionService.getAllSharedProfs();
+
+        return subs;
+    }
+
     @GetMapping("/subscription")
-    public List<Subscription> getAllSharedWallets(Authentication auth){
+    public List<Subscription> getSubscribedTo(Authentication auth){
         List<Subscription> subs = subscriptionService.getSubscriptions(auth.getName());
 
         return subs;
