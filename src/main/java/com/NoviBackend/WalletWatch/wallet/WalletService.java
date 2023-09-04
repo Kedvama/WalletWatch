@@ -1,7 +1,10 @@
 package com.NoviBackend.WalletWatch.wallet;
 
+import com.NoviBackend.WalletWatch.user.professional.ProfUserService;
+import com.NoviBackend.WalletWatch.user.professional.ProfessionalUser;
 import com.NoviBackend.WalletWatch.user.regular.RegularUser;
 import com.NoviBackend.WalletWatch.user.regular.RegularUserService;
+import com.NoviBackend.WalletWatch.wallet.dto.ProfPersonalWalletDto;
 import com.NoviBackend.WalletWatch.wallet.dto.RegularPersonalWalletDto;
 import com.NoviBackend.WalletWatch.wallet.dto.WalletDto;
 import com.NoviBackend.WalletWatch.wallet.mapper.WalletMapper;
@@ -17,13 +20,16 @@ public class WalletService {
     private final WalletRepository walletRepository;
     private final WalletMapper walletMapper;
     private final RegularUserService regularUserService;
+    private final ProfUserService profUserService;
 
     public WalletService(WalletRepository walletRepository,
                          WalletMapper walletMapper,
-                         @Lazy RegularUserService regularUserService){
+                         @Lazy RegularUserService regularUserService,
+                         ProfUserService profUserService){
         this.walletRepository = walletRepository;
         this.walletMapper = walletMapper;
         this.regularUserService = regularUserService;
+        this.profUserService = profUserService;
     }
 
     public Wallet findPublicById(int id) {
@@ -56,6 +62,20 @@ public class WalletService {
 
         RegularPersonalWalletDto walletDto = walletMapper.convertWalletToRegularWalletDto(
                 regularUser.getPersonalWallet()
+        );
+
+        return walletDto;
+    }
+
+    public ProfPersonalWalletDto getProfPersonalWalletDto(String username) {
+        ProfessionalUser profUser = profUserService.findByUsername(username);
+
+        if(profUser == null){
+            return null;
+        }
+
+        ProfPersonalWalletDto walletDto = walletMapper.convertWalletToProfWalletDto(
+                profUser.getPersonalWallet()
         );
 
         return walletDto;

@@ -42,11 +42,10 @@ public class ProfUserController {
         return proDto;
     }
 
-
-    @PostMapping("/prof/{profId}/demote")
-    public ResponseEntity<Object> demoteProfToRegularUser(@PathVariable Long profId,
-                                                          @RequestBody RequestDemote requestDemote){
-        Long userId = profUserService.demoteProfToRegularUser(profId);
+    @PostMapping("/prof/demote")
+    public ResponseEntity<Object> demoteProfToRegularUser(@RequestBody RequestDemote requestDemote,
+                                                          Authentication auth){
+        Long userId = profUserService.demoteProfToRegularUser(auth.getName());
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()

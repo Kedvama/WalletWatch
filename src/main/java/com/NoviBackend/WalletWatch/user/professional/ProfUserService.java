@@ -85,9 +85,9 @@ public class ProfUserService {
     }
 
     // methods
-    public Long demoteProfToRegularUser(Long profId){
+    public Long demoteProfToRegularUser(String username){
         // get professionalUser
-        ProfessionalUser prof =  findProfById(profId);
+        ProfessionalUser prof =  findProfByUsername(username);
 
         //convert prof to regularUser
         RegularUser regularUser = userMapper.convertProfessionalToRegularUser(prof);
@@ -104,7 +104,7 @@ public class ProfUserService {
         return regularUser.getId();
     }
 
-    public int existsByUserameAndEmail(RegularUserCreationDto user) {
+    public int existsByUsernameAndEmail(RegularUserCreationDto user) {
         if(profUserRepository.existsProfessionalUserByUsername(user.getUsername())){
             return -1;
         } else if (profUserRepository.existsProfessionalUserByEmailAddress(user.getEmailAddress())) {

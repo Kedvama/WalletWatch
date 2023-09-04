@@ -1,6 +1,7 @@
 package com.NoviBackend.WalletWatch.wallet;
 
 import com.NoviBackend.WalletWatch.exception.EntityNotFoundException;
+import com.NoviBackend.WalletWatch.wallet.dto.ProfPersonalWalletDto;
 import com.NoviBackend.WalletWatch.wallet.dto.RegularPersonalWalletDto;
 import com.NoviBackend.WalletWatch.wallet.dto.WalletDto;
 import org.springframework.security.core.Authentication;
@@ -39,6 +40,17 @@ public class WalletController {
     @GetMapping("/user/wallet")
     public RegularPersonalWalletDto getPersonWalletRegular(Authentication auth){
         RegularPersonalWalletDto walletDto = walletService.getRegularPersonalWalletDto(auth.getName());
+
+        if(walletDto == null){
+            throw new EntityNotFoundException("No wallet found for user: " + auth.getName());
+        }
+
+        return walletDto;
+    }
+
+    @GetMapping("/prof/wallet")
+    public ProfPersonalWalletDto getPersonalWalletProf(Authentication auth){
+        ProfPersonalWalletDto walletDto = walletService.getProfPersonalWalletDto(auth.getName());
 
         if(walletDto == null){
             throw new EntityNotFoundException("No wallet found for user: " + auth.getName());
