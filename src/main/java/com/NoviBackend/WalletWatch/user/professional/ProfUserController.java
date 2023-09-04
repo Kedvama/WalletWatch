@@ -1,7 +1,12 @@
 package com.NoviBackend.WalletWatch.user.professional;
 
+import com.NoviBackend.WalletWatch.exception.EntityNotFoundException;
 import com.NoviBackend.WalletWatch.request.RequestDemote;
+import com.NoviBackend.WalletWatch.user.AbstractUsers;
+import com.NoviBackend.WalletWatch.user.dto.PersonalProfessionalUserDto;
+import com.NoviBackend.WalletWatch.user.dto.ProfessionalUsersDto;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -17,15 +22,30 @@ public class ProfUserController {
     }
 
     @GetMapping("/profs")
-    public List<ProfessionalUser> getAllUsers(){
-        return profUserService.findAllProfs();
+    public List<ProfessionalUsersDto> getAllProfessionals(){
+        List<ProfessionalUsersDto> listProfDto = profUserService.findAllProfsDto();
+
+        if(listProfDto == null){
+            throw new EntityNotFoundException("No professional found");
+        }
+        return listProfDto;
     }
 
+    @GetMapping("/prof")
+    public PersonalProfessionalUserDto getPersonalProfile(Authentication auth){
+        PersonalProfessionalUserDto proDto = profUserService.getProfProfile(auth.getName());
 
-    @PostMapping("/prof/{profId}/demote")
-    public ResponseEntity<Object> demoteProfToRegularUser(@PathVariable Long profId,
-                                                          @RequestBody RequestDemote requestDemote){
-        Long userId = profUserService.demoteProfToRegularUser(profId);
+        if(proDto == null){
+            throw new EntityNotFoundException("No prof account for: " + auth.getName() + ", found");
+        }
+
+        return proDto;
+    }
+
+    @PostMapping("/prof/demote")
+    public ResponseEntity<Object> demoteProfToRegularUser(@RequestBody RequestDemote requestDemote,
+                                                          Authentication auth){
+        Long userId = profUserService.demoteProfToRegularUser(auth.getName());
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()

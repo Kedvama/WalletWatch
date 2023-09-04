@@ -1,13 +1,19 @@
 package com.NoviBackend.WalletWatch.wallet;
 
+import com.NoviBackend.WalletWatch.request.RequestShareWallet;
+import com.NoviBackend.WalletWatch.user.professional.ProfUserService;
+import com.NoviBackend.WalletWatch.user.professional.ProfessionalUser;
 import com.NoviBackend.WalletWatch.user.regular.RegularUser;
 import com.NoviBackend.WalletWatch.user.regular.RegularUserService;
+import com.NoviBackend.WalletWatch.wallet.dto.ProfPersonalWalletDto;
 import com.NoviBackend.WalletWatch.wallet.dto.RegularPersonalWalletDto;
 import com.NoviBackend.WalletWatch.wallet.dto.WalletDto;
 import com.NoviBackend.WalletWatch.wallet.mapper.WalletMapper;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,13 +23,16 @@ public class WalletService {
     private final WalletRepository walletRepository;
     private final WalletMapper walletMapper;
     private final RegularUserService regularUserService;
+    private final ProfUserService profUserService;
 
     public WalletService(WalletRepository walletRepository,
                          WalletMapper walletMapper,
-                         @Lazy RegularUserService regularUserService){
+                         @Lazy RegularUserService regularUserService,
+                         @Lazy ProfUserService profUserService){
         this.walletRepository = walletRepository;
         this.walletMapper = walletMapper;
         this.regularUserService = regularUserService;
+        this.profUserService = profUserService;
     }
 
     public Wallet findPublicById(int id) {
@@ -59,5 +68,35 @@ public class WalletService {
         );
 
         return walletDto;
+    }
+
+    public ProfPersonalWalletDto getProfPersonalWalletDto(String username) {
+        ProfessionalUser profUser = profUserService.findByUsername(username);
+
+        if(profUser == null){
+            return null;
+        }
+
+        ProfPersonalWalletDto walletDto = walletMapper.convertWalletToProfWalletDto(
+                profUser.getPersonalWallet()
+        );
+
+        return walletDto;
+    }
+
+    public boolean shareOrUnshareProfWallet(String username,
+                                            Collection<? extends GrantedAuthority> authorities,
+                                            RequestShareWallet shareWallet) {
+
+        boolean shared = false;
+
+        // check if user is prof
+        if(authorities.stream().anyMatch(ga -> ga.getAuthority().equals("ROLE_PROF"))){
+            ProfessionalUser prof = profUserService.findProfByUsername(username);
+            shared = prof.shareWallet(shareWallet.getShareWallet());
+            walletRepository.save(prof.getPersonalWallet());
+        }
+
+        return shared;
     }
 }

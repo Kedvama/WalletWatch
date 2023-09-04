@@ -86,7 +86,7 @@ public class RegularUserService {
         }
 
         // check if username or email in ProfessionalUser
-        return profUserService.existsByUserameAndEmail(user);
+        return profUserService.existsByUsernameAndEmail(user);
     }
 
     public RegularUserDto getRegularUserDto(String username) {

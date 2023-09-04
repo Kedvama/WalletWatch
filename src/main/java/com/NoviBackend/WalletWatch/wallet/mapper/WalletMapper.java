@@ -1,5 +1,6 @@
 package com.NoviBackend.WalletWatch.wallet.mapper;
 
+import com.NoviBackend.WalletWatch.wallet.dto.ProfPersonalWalletDto;
 import com.NoviBackend.WalletWatch.wallet.dto.RegularPersonalWalletDto;
 import com.NoviBackend.WalletWatch.wallet.dto.WalletDto;
 import com.NoviBackend.WalletWatch.wallet.Wallet;
@@ -37,5 +38,9 @@ public class WalletMapper {
 
     public RegularPersonalWalletDto convertWalletToRegularWalletDto(Wallet wallet){
         return modelMapper.map(wallet, RegularPersonalWalletDto.class);
+    }
+
+    public ProfPersonalWalletDto convertWalletToProfWalletDto(Wallet wallet) {
+        return modelMapper.map(wallet, ProfPersonalWalletDto.class);
     }
 }
