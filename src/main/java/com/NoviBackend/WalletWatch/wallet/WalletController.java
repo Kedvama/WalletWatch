@@ -1,9 +1,11 @@
 package com.NoviBackend.WalletWatch.wallet;
 
 import com.NoviBackend.WalletWatch.exception.EntityNotFoundException;
+import com.NoviBackend.WalletWatch.request.RequestShareWallet;
 import com.NoviBackend.WalletWatch.wallet.dto.ProfPersonalWalletDto;
 import com.NoviBackend.WalletWatch.wallet.dto.RegularPersonalWalletDto;
 import com.NoviBackend.WalletWatch.wallet.dto.WalletDto;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +37,13 @@ public class WalletController {
             throw new EntityNotFoundException("Shared wallet id: " + id + ", not found.");
 
         return wallet;
+    }
+
+    @PostMapping("/wallet")
+    public ResponseEntity<Object> shareUnshareWalletAsProf(@RequestBody RequestShareWallet shareWallet,
+                                                           Authentication auth){
+        boolean shared = walletService.shareOrUnshareProfWallet(auth.getName(), auth.getAuthorities(), shareWallet);
+        return ResponseEntity.ok().body(shared);
     }
 
     @GetMapping("/user/wallet")

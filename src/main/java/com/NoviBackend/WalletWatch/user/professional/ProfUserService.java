@@ -9,6 +9,8 @@ import com.NoviBackend.WalletWatch.user.dto.RegularUserCreationDto;
 import com.NoviBackend.WalletWatch.user.mapper.UserMapper;
 import com.NoviBackend.WalletWatch.user.regular.RegularUser;
 import com.NoviBackend.WalletWatch.user.regular.RegularUserRepository;
+import com.NoviBackend.WalletWatch.wallet.WalletRepository;
+import com.NoviBackend.WalletWatch.wallet.WalletService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,17 +23,20 @@ public class ProfUserService {
     private final RegularUserRepository regularUserRepository;
     private final AuthenticationService authenticationService;
     private final SubscriptionRepository subscriptionRepository;
+    private final WalletRepository walletRepository;
 
     public ProfUserService(ProfUserRepository profUserRepository,
                            UserMapper userMapper,
                            RegularUserRepository regularUserRepository,
                            AuthenticationService authenticationService,
-                           SubscriptionRepository subscriptionRepository){
+                           SubscriptionRepository subscriptionRepository,
+                           WalletRepository walletRepository){
         this.profUserRepository = profUserRepository;
         this.regularUserRepository = regularUserRepository;
         this.authenticationService = authenticationService;
         this.subscriptionRepository = subscriptionRepository;
         this.userMapper = userMapper;
+        this.walletRepository = walletRepository;
     }
 
     // find
@@ -88,6 +93,10 @@ public class ProfUserService {
     public Long demoteProfToRegularUser(String username){
         // get professionalUser
         ProfessionalUser prof =  findProfByUsername(username);
+
+        // unshare wallet
+        prof.shareWallet(false);
+        walletRepository.save(prof.getPersonalWallet());
 
         //convert prof to regularUser
         RegularUser regularUser = userMapper.convertProfessionalToRegularUser(prof);
