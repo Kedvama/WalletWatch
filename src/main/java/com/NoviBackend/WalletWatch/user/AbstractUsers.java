@@ -8,8 +8,7 @@ import jakarta.validation.constraints.Email;
 import java.util.List;
 import java.util.Set;
 
-@Entity
-@Inheritance(strategy =  InheritanceType.JOINED)
+@MappedSuperclass
 public abstract class AbstractUsers {
 
     // attributes
@@ -34,7 +33,7 @@ public abstract class AbstractUsers {
     private Wallet personalWallet;
 
     @OneToMany
-    @JoinColumn(name = "subscribed_user_id")
+    @JoinColumn(name = "user_id")
     private List<Subscription> subscriptions;
 
 

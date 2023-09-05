@@ -17,9 +17,8 @@ public class SubscriptionController {
 
     @GetMapping("/subscriptions")
     public List<Subscription> getAllsharedWallets(){
-        List<Subscription> subs = subscriptionService.getAllSharedProfs();
 
-        return subs;
+        return null;
     }
 
     @GetMapping("/subscription")
