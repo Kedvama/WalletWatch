@@ -15,7 +15,8 @@ import java.util.Date;
 public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public final ResponseEntity<Object> handleAllException(Exception ex, WebRequest request){
+    public final ResponseEntity<Object> handleAllException(Exception ex,
+                                                           WebRequest request){
         ExceptionResponse exceptionResponse =
                 new ExceptionResponse(new Date(), ex.getMessage(),
                         request.getDescription(false));
@@ -23,7 +24,8 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public final ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request){
+    public final ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException ex,
+                                                                      WebRequest request){
         ExceptionResponse exceptionResponse =
                 new ExceptionResponse(new Date(), ex.getMessage(),
                         request.getDescription(false));
@@ -31,7 +33,8 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     }
 
     @ExceptionHandler(UniqueAlreadyExistsException.class)
-    public final ResponseEntity<Object> handleUniqueAlreadyExistsException(UniqueAlreadyExistsException ex, WebRequest request){
+    public final ResponseEntity<Object> handleUniqueAlreadyExistsException(UniqueAlreadyExistsException ex,
+                                                                           WebRequest request){
         ExceptionResponse exceptionResponse =
                 new ExceptionResponse(new Date(), ex.getMessage(),
                         request.getDescription(false));
@@ -39,10 +42,20 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     }
 
     @ExceptionHandler(InvalidLoginCredentials.class)
-    public final ResponseEntity<Object> handleInvalidLoginCredentials(InvalidLoginCredentials ex, WebRequest request){
+    public final ResponseEntity<Object> handleInvalidLoginCredentials(InvalidLoginCredentials ex,
+                                                                      WebRequest request){
         ExceptionResponse exceptionResponse =
                 new ExceptionResponse(new Date(), ex.getMessage(),
                         request.getDescription(false));
         return new ResponseEntity(exceptionResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(UnableToSubscribeException.class)
+    public final ResponseEntity<Object> handleUnableToSubscribeException(UnableToSubscribeException ex,
+                                                                         WebRequest request){
+        ExceptionResponse exceptionResponse =
+                new ExceptionResponse(new Date(), ex.getMessage(),
+                        request.getDescription(false));
+        return new ResponseEntity(exceptionResponse, HttpStatus.CONFLICT);
     }
 }
