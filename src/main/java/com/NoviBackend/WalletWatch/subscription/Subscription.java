@@ -1,5 +1,6 @@
 package com.NoviBackend.WalletWatch.subscription;
 
+import com.NoviBackend.WalletWatch.user.professional.ProfessionalUser;
 import com.NoviBackend.WalletWatch.wallet.Wallet;
 import jakarta.persistence.*;
 
@@ -13,13 +14,13 @@ public class Subscription {
     private Long id;
 
     @ManyToOne
-    private Wallet wallet;
+    private ProfessionalUser professionalUser;
 
     public Subscription() {
     }
 
-    public Subscription(Wallet wallet) {
-        this.wallet = wallet;
+    public Subscription(ProfessionalUser professionalUser) {
+        this.professionalUser = professionalUser;
     }
 
     public Long getId() {
@@ -30,11 +31,11 @@ public class Subscription {
         this.id = id;
     }
 
-    public Wallet getWallet() {
-        return wallet;
+    public ProfessionalUser getProfessionalUser() {
+        return professionalUser;
     }
 
-    public void setWallet(Wallet wallet) {
-        this.wallet = wallet;
+    public void setProfessionalUser(ProfessionalUser professionalUser) {
+        this.professionalUser = professionalUser;
     }
 }

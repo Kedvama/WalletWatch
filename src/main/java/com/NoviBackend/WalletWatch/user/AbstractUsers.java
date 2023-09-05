@@ -5,6 +5,8 @@ import com.NoviBackend.WalletWatch.wallet.Wallet;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -95,20 +97,19 @@ public abstract class AbstractUsers {
         this.personalWallet = wallet;
     }
 
+    public void deleteSubscriptions() {
+        this.subscriptions = new ArrayList<>();
+    }
+
+    public void removeSubscription(Subscription subscription){
+        this.subscriptions.remove(subscription);
+    }
+
     public List<Subscription> getSubscriptions() {
         return subscriptions;
     }
 
-    @Override
-    public String toString() {
-        return "AbstractUsers{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", surname='" + surname + '\'' +
-                ", emailAddress='" + emailAddress + '\'' +
-                ", personalWallet=" + personalWallet +
-                ", subscriptions=" + subscriptions +
-                '}';
+    public void addSubscriptions(Subscription subscription) {
+        this.subscriptions.add(subscription);
     }
 }

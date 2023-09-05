@@ -2,8 +2,8 @@ package com.NoviBackend.WalletWatch.user.professional;
 
 import com.NoviBackend.WalletWatch.request.RequestPromote;
 import com.NoviBackend.WalletWatch.security.AuthenticationService;
+import com.NoviBackend.WalletWatch.subscription.Subscription;
 import com.NoviBackend.WalletWatch.subscription.SubscriptionRepository;
-import com.NoviBackend.WalletWatch.user.AbstractUsers;
 import com.NoviBackend.WalletWatch.user.dto.PersonalProfessionalUserDto;
 import com.NoviBackend.WalletWatch.user.dto.ProfessionalUsersDto;
 import com.NoviBackend.WalletWatch.user.dto.RegularUserCreationDto;
@@ -11,8 +11,7 @@ import com.NoviBackend.WalletWatch.user.mapper.UserMapper;
 import com.NoviBackend.WalletWatch.user.regular.RegularUser;
 import com.NoviBackend.WalletWatch.user.regular.RegularUserRepository;
 import com.NoviBackend.WalletWatch.wallet.WalletRepository;
-import com.NoviBackend.WalletWatch.wallet.WalletService;
-import org.springframework.security.core.Authentication;
+import jakarta.transaction.Transactional;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
@@ -55,7 +54,7 @@ public class ProfUserService {
         }else{
             List<ProfessionalUser> allProfessionalUsers = profUserRepository.findAll();
             for(ProfessionalUser prof: allProfessionalUsers){
-                if(prof.getPersonalWallet().getShared() == true){
+                if(prof.getPersonalWallet().getShared()){
                     listProfessionals.add(prof);
                 }
             }
@@ -75,11 +74,8 @@ public class ProfUserService {
     public ProfessionalUser findProfByUsername(String username){
         Optional<ProfessionalUser> prof = profUserRepository.findProfessionalUserByUsername(username);
 
-        if(prof == null){
-            return null;
-        }
+        return prof.orElse(null);
 
-        return prof.get();
     }
 
     // create
@@ -88,9 +84,12 @@ public class ProfUserService {
         ProfessionalUser professionalUser = userMapper.convertRegularUserToProfessional(regularUser);
 
         // set extra attributes
+        professionalUser.deleteSubscriptions();
         professionalUser.setCompany(request.getCompany());
         professionalUser.setShortIntroduction(request.getIntroduction());
 
+        List<Subscription> subscriptions = regularUser.getSubscriptions();
+        subscriptionRepository.deleteAll(subscriptions);
         regularUserRepository.delete(regularUser);
         profUserRepository.save(professionalUser);
 
@@ -106,6 +105,7 @@ public class ProfUserService {
     }
 
     // methods
+    @Transactional
     public Long demoteProfToRegularUser(String username){
         // get professionalUser
         ProfessionalUser prof =  findProfByUsername(username);
@@ -114,11 +114,17 @@ public class ProfUserService {
         prof.shareWallet(false);
         walletRepository.save(prof.getPersonalWallet());
 
-        //convert prof to regularUser
-        RegularUser regularUser = userMapper.convertProfessionalToRegularUser(prof);
+        // delete prof from subscription
+        int subs = subscriptionRepository.countByProfessionalUser(prof);
+        if(subs != 0){
+            subscriptionRepository.deleteAllByProfessionalUser(prof);
+        }
 
         // delete prof
         deleteProfessionalUser(prof);
+
+        //convert prof to regularUser
+        RegularUser regularUser = userMapper.convertProfessionalToRegularUser(prof);
 
         // save regularUser
         regularUserRepository.save(regularUser);
@@ -142,11 +148,7 @@ public class ProfUserService {
     public ProfessionalUser findByUsername(String username) {
         Optional<ProfessionalUser> user = profUserRepository.findProfessionalUserByUsername(username);
 
-        if(user.isEmpty()){
-            return null;
-        }
-
-        return user.get();
+        return user.orElse(null);
     }
 
     public PersonalProfessionalUserDto getProfProfile(String username) {
@@ -158,8 +160,7 @@ public class ProfUserService {
 
         PersonalProfessionalUserDto profDto = userMapper.convertProfToPersonalProfDto(prof);
         profDto.setSubscriptionsQuantity(
-                subscriptionRepository.countByWallet(
-                        prof.getPersonalWallet()));
+                subscriptionRepository.countByProfessionalUser(prof));
 
         return profDto;
     }

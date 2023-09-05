@@ -1,9 +1,14 @@
 package com.NoviBackend.WalletWatch.subscription;
 
+import com.NoviBackend.WalletWatch.exception.EntityNotFoundException;
+import com.NoviBackend.WalletWatch.exception.UnableToSubscribeException;
+import com.NoviBackend.WalletWatch.request.RequestSubscribe;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 
@@ -15,15 +20,33 @@ public class SubscriptionController {
         this.subscriptionService = subscriptionService;
     }
 
-    @GetMapping("/subscriptions")
-    public List<Subscription> getAllsharedWallets(){
+    @PostMapping("/subscriptions")
+    public ResponseEntity<Object> subscribeToProf(@RequestBody RequestSubscribe subscribeRequest, Authentication auth){
+        Long subscriptionId;
 
-        return null;
+        try {
+            subscriptionId = subscriptionService.subscribeToProf(subscribeRequest, auth.getName());
+        }catch (EntityNotFoundException ex){
+            throw ex;
+        }catch (UnableToSubscribeException ex){
+            throw ex;
+        }
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .replacePath("/subscriptions/{id}")
+                .buildAndExpand(subscriptionId).toUri();
+
+        return ResponseEntity.created(location).build();
     }
 
-    @GetMapping("/subscription")
+    @GetMapping("/user/subscriptions")
     public List<Subscription> getSubscribedTo(Authentication auth){
         List<Subscription> subs = subscriptionService.getSubscriptions(auth.getName());
+
+        if(subs == null){
+            throw new EntityNotFoundException("No subscriptions");
+        }
 
         return subs;
     }
