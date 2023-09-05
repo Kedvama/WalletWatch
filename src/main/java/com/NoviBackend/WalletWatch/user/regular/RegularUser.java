@@ -2,6 +2,7 @@ package com.NoviBackend.WalletWatch.user.regular;
 
 import com.NoviBackend.WalletWatch.user.AbstractUsers;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 @Entity
 public class RegularUser extends AbstractUsers {
@@ -14,7 +15,4 @@ public class RegularUser extends AbstractUsers {
         super(username, firstName, surname, emailAddress);
     }
 
-    public String becomeProfessionalUsers(){
-        return null;
-    }
 }

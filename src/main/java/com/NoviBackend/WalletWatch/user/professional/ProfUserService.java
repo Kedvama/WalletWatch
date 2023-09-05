@@ -3,6 +3,7 @@ package com.NoviBackend.WalletWatch.user.professional;
 import com.NoviBackend.WalletWatch.request.RequestPromote;
 import com.NoviBackend.WalletWatch.security.AuthenticationService;
 import com.NoviBackend.WalletWatch.subscription.SubscriptionRepository;
+import com.NoviBackend.WalletWatch.user.AbstractUsers;
 import com.NoviBackend.WalletWatch.user.dto.PersonalProfessionalUserDto;
 import com.NoviBackend.WalletWatch.user.dto.ProfessionalUsersDto;
 import com.NoviBackend.WalletWatch.user.dto.RegularUserCreationDto;
@@ -11,8 +12,12 @@ import com.NoviBackend.WalletWatch.user.regular.RegularUser;
 import com.NoviBackend.WalletWatch.user.regular.RegularUserRepository;
 import com.NoviBackend.WalletWatch.wallet.WalletRepository;
 import com.NoviBackend.WalletWatch.wallet.WalletService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,10 +45,21 @@ public class ProfUserService {
     }
 
     // find
-    public List<ProfessionalUsersDto> findAllProfsDto() {
-        List<ProfessionalUser>  listProfessionals = profUserRepository.findAll();
+    public List<ProfessionalUsersDto> findAllProfsDto(Collection<? extends GrantedAuthority> authorities) {
 
-        // map users to Dto's
+        List<ProfessionalUser> listProfessionals = new ArrayList<>();
+
+        // if admin return all, else return with shared wallet
+        if(authorities.stream().anyMatch(ga -> ga.getAuthority().equals("ROLE_ADMIN"))){
+            listProfessionals = profUserRepository.findAll();
+        }else{
+            List<ProfessionalUser> allProfessionalUsers = profUserRepository.findAll();
+            for(ProfessionalUser prof: allProfessionalUsers){
+                if(prof.getPersonalWallet().getShared() == true){
+                    listProfessionals.add(prof);
+                }
+            }
+        }
         if(listProfessionals == null){
             return null;
         }
@@ -75,7 +91,7 @@ public class ProfUserService {
         professionalUser.setCompany(request.getCompany());
         professionalUser.setShortIntroduction(request.getIntroduction());
 
-        // save into the profUser database
+        regularUserRepository.delete(regularUser);
         profUserRepository.save(professionalUser);
 
         // change authority to prof

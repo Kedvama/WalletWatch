@@ -110,7 +110,6 @@ public class RegularUserService {
         }
 
         Long profId = profUserService.createProfessionalUser(regularUser, request);
-        removeRegularUser(regularUser);
 
         return profId;
     }

@@ -22,8 +22,8 @@ public class ProfUserController {
     }
 
     @GetMapping("/profs")
-    public List<ProfessionalUsersDto> getAllProfessionals(){
-        List<ProfessionalUsersDto> listProfDto = profUserService.findAllProfsDto();
+    public List<ProfessionalUsersDto> getAllProfessionals(Authentication auth){
+        List<ProfessionalUsersDto> listProfDto = profUserService.findAllProfsDto(auth.getAuthorities());
 
         if(listProfDto == null){
             throw new EntityNotFoundException("No professional found");

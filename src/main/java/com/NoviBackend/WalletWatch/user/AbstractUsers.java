@@ -5,6 +5,7 @@ import com.NoviBackend.WalletWatch.wallet.Wallet;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 
+import java.util.List;
 import java.util.Set;
 
 @MappedSuperclass
@@ -12,7 +13,7 @@ public abstract class AbstractUsers {
 
     // attributes
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -32,8 +33,8 @@ public abstract class AbstractUsers {
     private Wallet personalWallet;
 
     @OneToMany
-    @JoinColumn(name="subscriber_id")
-    private Set<Subscription> subscriptions;
+    @JoinColumn(name = "user_id")
+    private List<Subscription> subscriptions;
 
 
     // constructor
@@ -46,7 +47,6 @@ public abstract class AbstractUsers {
         this.surname = surname;
         this.emailAddress = emailAddress;
         this.personalWallet = new Wallet();
-        // wallet needs to be saved.
     }
 
 
@@ -95,7 +95,7 @@ public abstract class AbstractUsers {
         this.personalWallet = wallet;
     }
 
-    public Set<Subscription> getSubscriptions() {
+    public List<Subscription> getSubscriptions() {
         return subscriptions;
     }
 
