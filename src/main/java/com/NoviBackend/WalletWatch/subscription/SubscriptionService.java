@@ -45,6 +45,7 @@ public class SubscriptionService {
         this.walletMapper = walletMapper;
     }
 
+    // methods
     public List<SubscribedProfessionalDto> getSubscriptions(String name) {
         RegularUser user = regularUserService.findByUsername(name);
         List<Subscription> subscriptions = user.getSubscriptions();
@@ -67,6 +68,17 @@ public class SubscriptionService {
         return optionalSubscription.map(this::mapSubscriptionToDto).orElse(null);
     }
 
+    public SubscribedProfessionalDto getSubscriptionById(Long id, String username) {
+        RegularUser user = regularUserService.findByUsername(username);
+        Subscription sub = checkSubscriptionInWalletById(user, id);
+
+        if(sub == null){
+            return null;
+        }
+
+        return mapSubscriptionToDto(sub);
+    }
+
     public Long subscribeToProf(RequestSubscribe subscribeRequest, String username) {
         // find and check prof to subscribe to.
         ProfessionalUser profToSubscribeTo = checkProf(subscribeRequest);
@@ -81,11 +93,11 @@ public class SubscriptionService {
         return subscription.getId();
     }
 
-    public String unSubscribe(RequestUnSubscribe unSubscribe, Authentication auth) {
+    public String unSubscribeToProf(RequestUnSubscribe unSubscribe, Authentication auth) {
         RegularUser user = regularUserService.findByUsername(auth.getName());
 
         // check if user is subscribed to prof
-        Subscription subscription = profInSubscriptionsCheck(user, unSubscribe.getUsernameProf());
+        Subscription subscription = checkProfInSubscriptions(user, unSubscribe.getUsernameProf());
 
         if(subscription == null){
             return null;
@@ -97,7 +109,8 @@ public class SubscriptionService {
         return unSubscribe.getUsernameProf();
     }
 
-    public Subscription profInSubscriptionsCheck(RegularUser user, String unsubscribeUsername){
+    // functions
+    private Subscription checkProfInSubscriptions(RegularUser user, String unsubscribeUsername){
 
         // see if prof inside users subscriptions
         Predicate<? super Subscription> predicate =
@@ -113,26 +126,21 @@ public class SubscriptionService {
         return optionalSubscription.orElse(null);
     }
 
-    public Subscription createSubscription(ProfessionalUser profToSubscribeTo, RegularUser regularUser){
-        Subscription subscription = new Subscription(profToSubscribeTo);
-        subscriptionRepository.save(subscription);
+    private Subscription checkSubscriptionInWalletById(RegularUser user, Long subscriptionId){
+        // see if prof inside users subscriptions
+        Predicate<? super Subscription> predicate =
+                subscription -> subscription.getId()
+                        .equals(subscriptionId);
 
-        regularUser.addSubscriptions(subscription);
-        regularUserRepository.save(regularUser);
+        Optional<Subscription> optionalSubscription = user.getSubscriptions()
+                .stream()
+                .filter(predicate)
+                .findFirst();
 
-        return subscription;
+        return optionalSubscription.orElse(null);
     }
 
-    public void deleteSubscription(RegularUser user, Subscription subscription){
-        // delete subscription from user
-        user.removeSubscription(subscription);
-        regularUserRepository.save(user);
-
-        // delete subscription
-        subscriptionRepository.delete(subscription);
-    }
-
-    public ProfessionalUser checkProf(RequestSubscribe subscribeRequest){
+    private ProfessionalUser checkProf(RequestSubscribe subscribeRequest){
         ProfessionalUser profToSubscribeTo = profUserService.findProfByUsername(
                 subscribeRequest.getSubscribeToUsername());
 
@@ -150,7 +158,26 @@ public class SubscriptionService {
         return profToSubscribeTo;
     }
 
-    public List<SubscribedProfessionalDto> mapSubscriptionToDto(List<Subscription> subscriptions){
+    private Subscription createSubscription(ProfessionalUser profToSubscribeTo, RegularUser regularUser){
+        Subscription subscription = new Subscription(profToSubscribeTo);
+        subscriptionRepository.save(subscription);
+
+        regularUser.addSubscriptions(subscription);
+        regularUserRepository.save(regularUser);
+
+        return subscription;
+    }
+
+    private void deleteSubscription(RegularUser user, Subscription subscription){
+        // delete subscription from user
+        user.removeSubscription(subscription);
+        regularUserRepository.save(user);
+
+        // delete subscription
+        subscriptionRepository.delete(subscription);
+    }
+
+    private List<SubscribedProfessionalDto> mapSubscriptionToDto(List<Subscription> subscriptions){
         List<SubscribedProfessionalDto> listRetSub = new ArrayList<>();
 
         for(Subscription sub: subscriptions){
@@ -169,7 +196,7 @@ public class SubscriptionService {
         return listRetSub;
     }
 
-    public SubscribedProfessionalDto mapSubscriptionToDto(Subscription subscription){
+    private SubscribedProfessionalDto mapSubscriptionToDto(Subscription subscription){
         ProfessionalUsersDto profDto = userMapper.convertProfToProfDto(subscription.getProfessionalUser());
         ProfPersonalWalletDto profWalletDto = walletMapper
                 .convertWalletToProfWalletDto(subscription
