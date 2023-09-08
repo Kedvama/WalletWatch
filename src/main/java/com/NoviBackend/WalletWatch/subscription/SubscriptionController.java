@@ -66,7 +66,7 @@ public class SubscriptionController {
 
     @PutMapping("/subscriptions")
     public ResponseEntity<Object> unsubscribeToProf(@RequestBody RequestUnSubscribe unSubscribe, Authentication auth){
-        String username  = subscriptionService.unSubscribe(unSubscribe, auth);
+        String username  = subscriptionService.unSubscribeToProf(unSubscribe, auth);
 
         if(username == null)
             throw new EntityNotFoundException("No subscription to professional: " +
@@ -81,6 +81,17 @@ public class SubscriptionController {
 
         if(subs == null){
             throw new EntityNotFoundException("No subscriptions");
+        }
+
+        return subs;
+    }
+
+    @GetMapping("/user/subscriptions/{id}")
+    public  SubscribedProfessionalDto getUserSubscriptionById(@PathVariable Long id, Authentication auth){
+        SubscribedProfessionalDto subs = subscriptionService.getSubscriptionById(id, auth.getName());
+
+        if(subs == null){
+            throw new EntityNotFoundException("No subscription with id: "+ id + ", found.");
         }
 
         return subs;
