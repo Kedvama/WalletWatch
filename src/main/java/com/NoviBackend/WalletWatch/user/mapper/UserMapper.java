@@ -38,6 +38,10 @@ public class UserMapper {
         return modelMapper.map(regularUser, RegularUserDto.class);
     }
 
+    public ProfessionalUsersDto convertProfToProfDto(ProfessionalUser prof){
+        return modelMapper.map(prof, ProfessionalUsersDto.class);
+    }
+
     public List<ProfessionalUsersDto> convertListProfToListProfDto(List<ProfessionalUser> listProfessionals) {
         List<ProfessionalUsersDto> listProfDto = new ArrayList<>();
 
