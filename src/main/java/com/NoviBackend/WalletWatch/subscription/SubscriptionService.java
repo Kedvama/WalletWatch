@@ -3,6 +3,7 @@ package com.NoviBackend.WalletWatch.subscription;
 import com.NoviBackend.WalletWatch.exception.EntityNotFoundException;
 import com.NoviBackend.WalletWatch.exception.UnableToSubscribeException;
 import com.NoviBackend.WalletWatch.request.RequestSubscribe;
+import com.NoviBackend.WalletWatch.request.RequestUnSubscribe;
 import com.NoviBackend.WalletWatch.subscription.dto.SubscribedProfessionalDto;
 import com.NoviBackend.WalletWatch.user.dto.ProfessionalUsersDto;
 import com.NoviBackend.WalletWatch.user.mapper.UserMapper;
@@ -13,10 +14,13 @@ import com.NoviBackend.WalletWatch.user.regular.RegularUserRepository;
 import com.NoviBackend.WalletWatch.user.regular.RegularUserService;
 import com.NoviBackend.WalletWatch.wallet.dto.ProfPersonalWalletDto;
 import com.NoviBackend.WalletWatch.wallet.mapper.WalletMapper;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 @Service
 public class SubscriptionService {
@@ -68,7 +72,71 @@ public class SubscriptionService {
     }
 
     public Long subscribeToProf(RequestSubscribe subscribeRequest, String username) {
-        // find prof to subscribe to.
+        // find and check prof to subscribe to.
+        ProfessionalUser profToSubscribeTo = checkProf(subscribeRequest);
+
+        // find user
+        RegularUser regularUser = regularUserService.findByUsername(username);
+
+        // create subscription
+        Subscription subscription = createSubscription(profToSubscribeTo, regularUser);
+
+        // return profId
+        return subscription.getId();
+    }
+
+    public String unSubscribe(RequestUnSubscribe unSubscribe, Authentication auth) {
+        RegularUser user = regularUserService.findByUsername(auth.getName());
+
+        // check if user is subscribed to prof
+        Subscription subscription = profInSubscriptionsCheck(user, unSubscribe.getUsernameProf());
+
+        if(subscription == null){
+            return null;
+        }
+
+        deleteSubscription(user, subscription);
+
+        // return profUsername
+        return unSubscribe.getUsernameProf();
+    }
+
+    public Subscription profInSubscriptionsCheck(RegularUser user, String unsubscribeUsername){
+
+        // see if prof inside users subscriptions
+        Predicate<? super Subscription> predicate =
+                subscription -> subscription.getProfessionalUser()
+                        .getUsername()
+                        .equals(unsubscribeUsername);
+
+        Optional<Subscription> optionalSubscription = user.getSubscriptions()
+                .stream()
+                .filter(predicate)
+                .findFirst();
+
+        return optionalSubscription.orElse(null);
+    }
+
+    public Subscription createSubscription(ProfessionalUser profToSubscribeTo, RegularUser regularUser){
+        Subscription subscription = new Subscription(profToSubscribeTo);
+        subscriptionRepository.save(subscription);
+
+        regularUser.addSubscriptions(subscription);
+        regularUserRepository.save(regularUser);
+
+        return subscription;
+    }
+
+    public void deleteSubscription(RegularUser user, Subscription subscription){
+        // delete subscription from user
+        user.removeSubscription(subscription);
+        regularUserRepository.save(user);
+
+        // delete subscription
+        subscriptionRepository.delete(subscription);
+    }
+
+    public ProfessionalUser checkProf(RequestSubscribe subscribeRequest){
         ProfessionalUser profToSubscribeTo = profUserService.findProfByUsername(
                 subscribeRequest.getSubscribeToUsername());
 
@@ -83,26 +151,6 @@ public class SubscriptionService {
                     + subscribeRequest.getSubscribeToUsername());
         }
 
-        // find user
-        RegularUser regularUser = regularUserService.findByUsername(username);
-
-        // create subscription
-        Subscription subscription = createSubscription(profToSubscribeTo);
-
-        // add to subscriptions
-        regularUser.addSubscriptions(subscription);
-        regularUserRepository.save(regularUser);
-        // return profId
-        return subscription.getId();
+        return profToSubscribeTo;
     }
-
-
-    public Subscription createSubscription(ProfessionalUser profToSubscribeTo){
-        Subscription subscription = new Subscription(profToSubscribeTo);
-
-        subscriptionRepository.save(subscription);
-
-        return subscription;
-    }
-
 }
