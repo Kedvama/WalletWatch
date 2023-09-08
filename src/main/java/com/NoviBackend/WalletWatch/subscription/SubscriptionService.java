@@ -4,7 +4,9 @@ import com.NoviBackend.WalletWatch.exception.EntityNotFoundException;
 import com.NoviBackend.WalletWatch.exception.UnableToSubscribeException;
 import com.NoviBackend.WalletWatch.request.RequestSubscribe;
 import com.NoviBackend.WalletWatch.request.RequestUnSubscribe;
+import com.NoviBackend.WalletWatch.stock.Stock;
 import com.NoviBackend.WalletWatch.subscription.dto.SubscribedProfessionalDto;
+import com.NoviBackend.WalletWatch.subscription.dto.SubscriptionCompareDto;
 import com.NoviBackend.WalletWatch.user.dto.ProfessionalUsersDto;
 import com.NoviBackend.WalletWatch.user.mapper.UserMapper;
 import com.NoviBackend.WalletWatch.user.professional.ProfUserService;
@@ -12,12 +14,14 @@ import com.NoviBackend.WalletWatch.user.professional.ProfessionalUser;
 import com.NoviBackend.WalletWatch.user.regular.RegularUser;
 import com.NoviBackend.WalletWatch.user.regular.RegularUserRepository;
 import com.NoviBackend.WalletWatch.user.regular.RegularUserService;
+import com.NoviBackend.WalletWatch.wallet.Wallet;
 import com.NoviBackend.WalletWatch.wallet.dto.ProfPersonalWalletDto;
 import com.NoviBackend.WalletWatch.wallet.mapper.WalletMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -109,7 +113,38 @@ public class SubscriptionService {
         return unSubscribe.getUsernameProf();
     }
 
+    public SubscriptionCompareDto compareSubscriptionsWithWallet(Authentication auth) {
+        RegularUser user = regularUserService.findByUsername(auth.getName());
+
+        if(user.getSubscriptions().isEmpty()){
+            return null;
+        }
+
+        HashMap<String, String> mapUserStocks = getStocksAndAction(user.getPersonalWallet());
+
+        return sortComparedStocks(user, mapUserStocks);
+    }
+
     // functions
+    private Subscription createSubscription(ProfessionalUser profToSubscribeTo, RegularUser regularUser){
+        Subscription subscription = new Subscription(profToSubscribeTo);
+        subscriptionRepository.save(subscription);
+
+        regularUser.addSubscriptions(subscription);
+        regularUserRepository.save(regularUser);
+
+        return subscription;
+    }
+
+    private void deleteSubscription(RegularUser user, Subscription subscription){
+        // delete subscription from user
+        user.removeSubscription(subscription);
+        regularUserRepository.save(user);
+
+        // delete subscription
+        subscriptionRepository.delete(subscription);
+    }
+
     private Subscription checkProfInSubscriptions(RegularUser user, String unsubscribeUsername){
 
         // see if prof inside users subscriptions
@@ -158,23 +193,45 @@ public class SubscriptionService {
         return profToSubscribeTo;
     }
 
-    private Subscription createSubscription(ProfessionalUser profToSubscribeTo, RegularUser regularUser){
-        Subscription subscription = new Subscription(profToSubscribeTo);
-        subscriptionRepository.save(subscription);
+    private HashMap<String, String> getStocksAndAction(Wallet wallet){
+        HashMap<String, String> stocksAndActions = new HashMap<>();
 
-        regularUser.addSubscriptions(subscription);
-        regularUserRepository.save(regularUser);
-
-        return subscription;
+        for(Stock stock: wallet.getStocks()){
+            stocksAndActions.put(stock.getStockName(), stock.getAction());
+        }
+        return stocksAndActions;
     }
 
-    private void deleteSubscription(RegularUser user, Subscription subscription){
-        // delete subscription from user
-        user.removeSubscription(subscription);
-        regularUserRepository.save(user);
+    private SubscriptionCompareDto sortComparedStocks(RegularUser user, HashMap<String, String> userStocks){
+        SubscriptionCompareDto subDto = new SubscriptionCompareDto();
 
-        // delete subscription
-        subscriptionRepository.delete(subscription);
+        for(Subscription sub: user.getSubscriptions()){
+            for(Stock stock: sub.getProfessionalUser().getPersonalWallet().getStocks()){
+                if(!userStocks.containsKey(stock.getStockName())){
+                    subDto  = addStock(stock, subDto);
+                }else{
+                    if(!stock.getAction().equals(userStocks.get(stock.getStockName()))){
+                        subDto = addStock(stock, subDto);
+                    }
+                }
+            }
+        }
+        return subDto;
+    }
+
+    private SubscriptionCompareDto addStock(Stock stock, SubscriptionCompareDto subDto){
+        switch (stock.getAction()){
+            case "buy":
+                subDto.addBuy(stock);break;
+            case "sell":
+                subDto.addSell(stock);break;
+            case "hold":
+                subDto.addHold(stock);break;
+            default:
+                subDto.addOther(stock);break;
+        }
+
+        return subDto;
     }
 
     private List<SubscribedProfessionalDto> mapSubscriptionToDto(List<Subscription> subscriptions){

@@ -43,7 +43,6 @@ public class SpringSecurityConfig {
         return authenticationManagerBuilder.build();
     }
 
-
     @Bean
     protected SecurityFilterChain filter (HttpSecurity http) throws Exception{
         //noinspection removal
