@@ -3,16 +3,16 @@ package com.NoviBackend.WalletWatch.subscription.dto;
 import com.NoviBackend.WalletWatch.user.dto.ProfessionalUsersDto;
 import com.NoviBackend.WalletWatch.wallet.dto.ProfPersonalWalletDto;
 
-public class ReturnSubscriptionDto  {
+public class SubscribedProfessionalDto {
     private ProfessionalUsersDto prof;
     private ProfPersonalWalletDto wallet;
 
-    public ReturnSubscriptionDto(ProfessionalUsersDto prof, ProfPersonalWalletDto walletDto) {
+    public SubscribedProfessionalDto(ProfessionalUsersDto prof, ProfPersonalWalletDto walletDto) {
         this.prof = prof;
         this.wallet = walletDto;
     }
 
-    public ReturnSubscriptionDto() {
+    public SubscribedProfessionalDto() {
     }
 
     public ProfessionalUsersDto getProf() {
