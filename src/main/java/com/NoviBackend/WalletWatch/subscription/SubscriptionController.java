@@ -33,6 +33,17 @@ public class SubscriptionController {
         return subs;
     }
 
+    @GetMapping("/subscriptions/{id}")
+    public SubscribedProfessionalDto getSubscriptionById(@PathVariable Long id){
+        SubscribedProfessionalDto sub = subscriptionService.getSubscriptionById(id);
+
+        if(sub == null){
+            throw new EntityNotFoundException("No subscription with id: " + id + ", found.");
+        }
+
+        return sub;
+    }
+
     @PostMapping("/subscriptions")
     public ResponseEntity<Object> subscribeToProf(@RequestBody RequestSubscribe subscribeRequest, Authentication auth){
         Long subscriptionId;

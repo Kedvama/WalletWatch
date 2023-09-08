@@ -61,6 +61,12 @@ public class SubscriptionService {
         return mapSubscriptionToDto(subscription);
     }
 
+    public SubscribedProfessionalDto getSubscriptionById(Long id) {
+        Optional<Subscription> optionalSubscription = subscriptionRepository.findById(id);
+
+        return optionalSubscription.map(this::mapSubscriptionToDto).orElse(null);
+    }
+
     public Long subscribeToProf(RequestSubscribe subscribeRequest, String username) {
         // find and check prof to subscribe to.
         ProfessionalUser profToSubscribeTo = checkProf(subscribeRequest);
@@ -156,9 +162,24 @@ public class SubscriptionService {
 
             listRetSub.add(
                     new SubscribedProfessionalDto(
+                            sub.getId(),
                             profDto,
                             profWalletDto));
         }
         return listRetSub;
+    }
+
+    public SubscribedProfessionalDto mapSubscriptionToDto(Subscription subscription){
+        ProfessionalUsersDto profDto = userMapper.convertProfToProfDto(subscription.getProfessionalUser());
+        ProfPersonalWalletDto profWalletDto = walletMapper
+                .convertWalletToProfWalletDto(subscription
+                        .getProfessionalUser()
+                        .getPersonalWallet());
+
+
+        return new SubscribedProfessionalDto(
+                subscription.getId(),
+                profDto,
+                profWalletDto);
     }
 }
