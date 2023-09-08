@@ -5,6 +5,7 @@ import com.NoviBackend.WalletWatch.exception.UnableToSubscribeException;
 import com.NoviBackend.WalletWatch.request.RequestSubscribe;
 import com.NoviBackend.WalletWatch.request.RequestUnSubscribe;
 import com.NoviBackend.WalletWatch.subscription.dto.SubscribedProfessionalDto;
+import com.NoviBackend.WalletWatch.subscription.dto.SubscriptionCompareDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -31,17 +32,6 @@ public class SubscriptionController {
         }
 
         return subs;
-    }
-
-    @GetMapping("/subscriptions/{id}")
-    public SubscribedProfessionalDto getSubscriptionById(@PathVariable Long id){
-        SubscribedProfessionalDto sub = subscriptionService.getSubscriptionById(id);
-
-        if(sub == null){
-            throw new EntityNotFoundException("No subscription with id: " + id + ", found.");
-        }
-
-        return sub;
     }
 
     @PostMapping("/subscriptions")
@@ -75,6 +65,17 @@ public class SubscriptionController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/subscriptions/{id}")
+    public SubscribedProfessionalDto getSubscriptionById(@PathVariable Long id){
+        SubscribedProfessionalDto sub = subscriptionService.getSubscriptionById(id);
+
+        if(sub == null){
+            throw new EntityNotFoundException("No subscription with id: " + id + ", found.");
+        }
+
+        return sub;
+    }
+
     @GetMapping("/user/subscriptions")
     public List<SubscribedProfessionalDto> getSubscribedTo(Authentication auth){
         List<SubscribedProfessionalDto> subs = subscriptionService.getSubscriptions(auth.getName());
@@ -95,5 +96,15 @@ public class SubscriptionController {
         }
 
         return subs;
+    }
+
+    @GetMapping("/user/subscriptions/compare")
+    public SubscriptionCompareDto getComparedWalletWithSubscriptions(Authentication auth){
+        SubscriptionCompareDto comparedDto = subscriptionService.compareSubscriptionsWithWallet(auth);
+
+        if(comparedDto == null){
+            throw new EntityNotFoundException("No subscriptions");
+        }
+        return comparedDto;
     }
 }
