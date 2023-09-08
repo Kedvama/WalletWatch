@@ -3,7 +3,7 @@ package com.NoviBackend.WalletWatch.subscription;
 import com.NoviBackend.WalletWatch.exception.EntityNotFoundException;
 import com.NoviBackend.WalletWatch.exception.UnableToSubscribeException;
 import com.NoviBackend.WalletWatch.request.RequestSubscribe;
-import com.NoviBackend.WalletWatch.subscription.dto.ReturnSubscriptionDto;
+import com.NoviBackend.WalletWatch.subscription.dto.SubscribedProfessionalDto;
 import com.NoviBackend.WalletWatch.user.dto.ProfessionalUsersDto;
 import com.NoviBackend.WalletWatch.user.mapper.UserMapper;
 import com.NoviBackend.WalletWatch.user.professional.ProfUserService;
@@ -41,7 +41,7 @@ public class SubscriptionService {
         this.walletMapper = walletMapper;
     }
 
-    public List<ReturnSubscriptionDto> getSubscriptions(String name) {
+    public List<SubscribedProfessionalDto> getSubscriptions(String name) {
         RegularUser user = regularUserService.findByUsername(name);
         List<Subscription> subscriptions = user.getSubscriptions();
 
@@ -49,7 +49,7 @@ public class SubscriptionService {
             return null;
         }
 
-        List<ReturnSubscriptionDto> listRetSub = new ArrayList<>();
+        List<SubscribedProfessionalDto> listRetSub = new ArrayList<>();
 
         for(Subscription sub: subscriptions){
             ProfessionalUsersDto profDto = userMapper.convertProfToProfDto(sub.getProfessionalUser());
@@ -59,7 +59,7 @@ public class SubscriptionService {
                     .getPersonalWallet());
 
             listRetSub.add(
-                    new ReturnSubscriptionDto(
+                    new SubscribedProfessionalDto(
                             profDto,
                             profWalletDto));
         }
