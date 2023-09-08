@@ -3,6 +3,7 @@ package com.NoviBackend.WalletWatch.subscription;
 import com.NoviBackend.WalletWatch.exception.EntityNotFoundException;
 import com.NoviBackend.WalletWatch.exception.UnableToSubscribeException;
 import com.NoviBackend.WalletWatch.request.RequestSubscribe;
+import com.NoviBackend.WalletWatch.subscription.dto.ReturnSubscriptionDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -41,8 +42,8 @@ public class SubscriptionController {
     }
 
     @GetMapping("/user/subscriptions")
-    public List<Subscription> getSubscribedTo(Authentication auth){
-        List<Subscription> subs = subscriptionService.getSubscriptions(auth.getName());
+    public List<ReturnSubscriptionDto> getSubscribedTo(Authentication auth){
+        List<ReturnSubscriptionDto> subs = subscriptionService.getSubscriptions(auth.getName());
 
         if(subs == null){
             throw new EntityNotFoundException("No subscriptions");
