@@ -76,6 +76,7 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/wallet").hasRole("PROF")
                 .requestMatchers(HttpMethod.GET, "/user/subscriptions").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.POST, "/subscriptions").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/subscriptions").hasAnyRole("USER", "ADMIN")
 
                 .anyRequest().denyAll()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

@@ -3,6 +3,7 @@ package com.NoviBackend.WalletWatch.subscription;
 import com.NoviBackend.WalletWatch.exception.EntityNotFoundException;
 import com.NoviBackend.WalletWatch.exception.UnableToSubscribeException;
 import com.NoviBackend.WalletWatch.request.RequestSubscribe;
+import com.NoviBackend.WalletWatch.request.RequestUnSubscribe;
 import com.NoviBackend.WalletWatch.subscription.dto.SubscribedProfessionalDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -39,6 +40,17 @@ public class SubscriptionController {
                 .buildAndExpand(subscriptionId).toUri();
 
         return ResponseEntity.created(location).build();
+    }
+
+    @PutMapping("/subscriptions")
+    public ResponseEntity<Object> unsubscribeToProf(@RequestBody RequestUnSubscribe unSubscribe, Authentication auth){
+        String username  = subscriptionService.unSubscribe(unSubscribe, auth);
+
+        if(username == null)
+            throw new EntityNotFoundException("No subscription to professional: " +
+                    unSubscribe.getUsernameProf());
+
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/user/subscriptions")
