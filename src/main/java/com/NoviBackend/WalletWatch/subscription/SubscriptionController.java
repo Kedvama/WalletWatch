@@ -22,6 +22,28 @@ public class SubscriptionController {
         this.subscriptionService = subscriptionService;
     }
 
+    @GetMapping("/subscriptions")
+    public List<SubscribedProfessionalDto> getAllSubscriptions(){
+        List<SubscribedProfessionalDto> subs = subscriptionService.getAllSubscriptions();
+
+        if(subs.isEmpty()){
+            throw new EntityNotFoundException("NO SUBSCRIPTIONS");
+        }
+
+        return subs;
+    }
+
+    @GetMapping("/subscriptions/{id}")
+    public SubscribedProfessionalDto getSubscriptionById(@PathVariable Long id){
+        SubscribedProfessionalDto sub = subscriptionService.getSubscriptionById(id);
+
+        if(sub == null){
+            throw new EntityNotFoundException("No subscription with id: " + id + ", found.");
+        }
+
+        return sub;
+    }
+
     @PostMapping("/subscriptions")
     public ResponseEntity<Object> subscribeToProf(@RequestBody RequestSubscribe subscribeRequest, Authentication auth){
         Long subscriptionId;

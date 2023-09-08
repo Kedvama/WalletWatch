@@ -53,22 +53,18 @@ public class SubscriptionService {
             return null;
         }
 
-        List<SubscribedProfessionalDto> listRetSub = new ArrayList<>();
+        return  mapSubscriptionToDto(subscriptions);
+    }
 
-        for(Subscription sub: subscriptions){
-            ProfessionalUsersDto profDto = userMapper.convertProfToProfDto(sub.getProfessionalUser());
-            ProfPersonalWalletDto profWalletDto = walletMapper
-                    .convertWalletToProfWalletDto(sub
-                    .getProfessionalUser()
-                    .getPersonalWallet());
+    public List<SubscribedProfessionalDto> getAllSubscriptions() {
+        List<Subscription> subscription = subscriptionRepository.findAll();
+        return mapSubscriptionToDto(subscription);
+    }
 
-            listRetSub.add(
-                    new SubscribedProfessionalDto(
-                            profDto,
-                            profWalletDto));
-        }
+    public SubscribedProfessionalDto getSubscriptionById(Long id) {
+        Optional<Subscription> optionalSubscription = subscriptionRepository.findById(id);
 
-        return  listRetSub;
+        return optionalSubscription.map(this::mapSubscriptionToDto).orElse(null);
     }
 
     public Long subscribeToProf(RequestSubscribe subscribeRequest, String username) {
@@ -152,5 +148,38 @@ public class SubscriptionService {
         }
 
         return profToSubscribeTo;
+    }
+
+    public List<SubscribedProfessionalDto> mapSubscriptionToDto(List<Subscription> subscriptions){
+        List<SubscribedProfessionalDto> listRetSub = new ArrayList<>();
+
+        for(Subscription sub: subscriptions){
+            ProfessionalUsersDto profDto = userMapper.convertProfToProfDto(sub.getProfessionalUser());
+            ProfPersonalWalletDto profWalletDto = walletMapper
+                    .convertWalletToProfWalletDto(sub
+                            .getProfessionalUser()
+                            .getPersonalWallet());
+
+            listRetSub.add(
+                    new SubscribedProfessionalDto(
+                            sub.getId(),
+                            profDto,
+                            profWalletDto));
+        }
+        return listRetSub;
+    }
+
+    public SubscribedProfessionalDto mapSubscriptionToDto(Subscription subscription){
+        ProfessionalUsersDto profDto = userMapper.convertProfToProfDto(subscription.getProfessionalUser());
+        ProfPersonalWalletDto profWalletDto = walletMapper
+                .convertWalletToProfWalletDto(subscription
+                        .getProfessionalUser()
+                        .getPersonalWallet());
+
+
+        return new SubscribedProfessionalDto(
+                subscription.getId(),
+                profDto,
+                profWalletDto);
     }
 }
