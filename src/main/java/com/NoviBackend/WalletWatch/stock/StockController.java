@@ -41,13 +41,6 @@ public class StockController {
         return ResponseEntity.created(location).build();
     }
 
-    @DeleteMapping("/stocks")
-    public ResponseEntity<Object> deleteStock(@RequestBody Stock stock){
-        // delete stock if in your wallet.
-
-        return ResponseEntity.noContent().build();
-    }
-
     @GetMapping("/stocks/{id}")
     public Stock getStock(@PathVariable Long id, Authentication auth){
         Stock stock = stockService.getStock(auth.getName(), auth.getAuthorities(), id);
@@ -75,6 +68,19 @@ public class StockController {
                 .buildAndExpand(id).toUri();
 
         return ResponseEntity.created(location).build();
+    }
+
+    @DeleteMapping("/stocks/{id}")
+    public ResponseEntity<Object> deleteStockFromWallet(@PathVariable Long id,
+                                                        Authentication auth){
+
+        Long removedId  = stockService.deleteStock(id, auth);
+
+        if(removedId == null){
+            throw new EntityNotFoundException("Could not remove stock with id : " + id);
+        }
+
+        return ResponseEntity.noContent().build();
     }
 
 }

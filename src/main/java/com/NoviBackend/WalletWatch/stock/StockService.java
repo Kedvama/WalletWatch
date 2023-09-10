@@ -61,7 +61,7 @@ public class StockService {
             return null;
         }
 
-        return getStockFromWallet(stockId, user);
+        return getStockFromWalletById(stockId, user);
     }
 
     public Long addStock(String username, Collection<? extends GrantedAuthority> authorities, StockDto stockDto) {
@@ -78,7 +78,7 @@ public class StockService {
 
     public Long updateStock(Long stockId, StockDto stockDto, Authentication auth) {
         AbstractUsers user = smallUserProfFactory(auth.getAuthorities(), auth.getName());
-        Stock oldStock = getStockFromWallet(stockId, user);
+        Stock oldStock = getStockFromWalletById(stockId, user);
 
         if(oldStock == null){
             return null;
@@ -87,7 +87,20 @@ public class StockService {
         Stock newStock = stockMapper.convertStockDtoToStock(stockDto);
         newStock.setId(oldStock.getId());
         newStock.setWallet(oldStock.getWallet());
+
         return replaceStock(user, oldStock, newStock);
+    }
+
+    public Long deleteStock(Long id, Authentication auth) {
+        AbstractUsers user = smallUserProfFactory(auth.getAuthorities(), auth.getName());
+        Stock stock = getStockFromWalletById(id, user);
+
+        if(stock == null || deleteStockFromWallet(stock, user) == null){
+            return null;
+        }
+
+        stockRepository.delete(stock);
+        return stock.getId();
     }
 
     // functions
@@ -123,7 +136,7 @@ public class StockService {
         return stock.getId();
     }
 
-    private Stock getStockFromWallet(Long stockId, AbstractUsers user){
+    private Stock getStockFromWalletById(Long stockId, AbstractUsers user){
         Predicate<? super Stock> predicate =
                 stock -> stock.getId().equals(stockId);
         Optional<Stock> optionalStock = user.getPersonalWallet()
@@ -136,9 +149,19 @@ public class StockService {
 
     private Long replaceStock(AbstractUsers user, Stock oldStock, Stock newStock){
         user.getPersonalWallet().setStock(oldStock, newStock);
-        user = smallUserStockSaveFactory(user);
+        smallUserStockSaveFactory(user);
         stockRepository.save(newStock);
         return newStock.getId();
+    }
+
+    private AbstractUsers deleteStockFromWallet(Stock stock, AbstractUsers user){
+        boolean stockRemoved = user.getPersonalWallet().deleteStock(stock);
+
+        if(!stockRemoved){
+            return null;
+        }
+
+        return smallUserStockSaveFactory(user);
     }
 }
 
