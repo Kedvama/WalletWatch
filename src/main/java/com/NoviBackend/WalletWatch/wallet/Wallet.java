@@ -47,8 +47,18 @@ public class Wallet {
         this.stocks = stocks;
     }
 
+    public void setStock(Stock oldStock, Stock newStock){
+        int stockIndex = this.stocks.indexOf(oldStock);
+        this.stocks.set(stockIndex, newStock);
+    }
+
+
     public void addStock(Stock stock){
         this.stocks.add(stock);
+    }
+
+    public void deleteStock(Stock stock) {
+        this.stocks.remove(stock);
     }
 }
 
