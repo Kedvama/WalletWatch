@@ -29,17 +29,6 @@ public class StockController {
         return stocks;
     }
 
-    @GetMapping("/stocks/{id}")
-    public Stock getStock(@PathVariable Long id, Authentication auth){
-        Stock stock = stockService.getStock(auth.getName(), auth.getAuthorities(), id);
-
-        if(stock == null){
-            throw new EntityNotFoundException("Stock in wallet with id: " + id + ", not found");
-        }
-
-        return stock;
-    }
-
     @PostMapping("/stocks")
     public ResponseEntity<Object> addStockToWallet(@RequestBody StockDto stockDto, Authentication auth){
         Long stockId = stockService.addStock(auth.getName(), auth.getAuthorities(), stockDto);
@@ -57,6 +46,35 @@ public class StockController {
         // delete stock if in your wallet.
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/stocks/{id}")
+    public Stock getStock(@PathVariable Long id, Authentication auth){
+        Stock stock = stockService.getStock(auth.getName(), auth.getAuthorities(), id);
+
+        if(stock == null){
+            throw new EntityNotFoundException("Stock in wallet with id: " + id + ", not found");
+        }
+
+        return stock;
+    }
+
+    @PutMapping("/stocks/{id}")
+    public ResponseEntity<Object> updateStock(@RequestBody StockDto stockDto,
+                                              @PathVariable Long id,
+                                              Authentication auth){
+        Long replacedStockId = stockService.updateStock(id, stockDto, auth);
+
+        if(replacedStockId == null){
+            throw new EntityNotFoundException("Stock with id: " + id + ", not found.");
+        }
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .replacePath("/stocks/{id}")
+                .buildAndExpand(id).toUri();
+
+        return ResponseEntity.created(location).build();
     }
 
 }

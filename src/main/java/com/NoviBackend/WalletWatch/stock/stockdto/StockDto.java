@@ -1,7 +1,5 @@
 package com.NoviBackend.WalletWatch.stock.stockdto;
 
-import jakarta.persistence.Column;
-
 import java.math.BigDecimal;
 
 public class StockDto {
