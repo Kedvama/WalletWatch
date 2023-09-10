@@ -52,13 +52,12 @@ public class Wallet {
         this.stocks.set(stockIndex, newStock);
     }
 
-
     public void addStock(Stock stock){
         this.stocks.add(stock);
     }
 
-    public void deleteStock(Stock stock) {
-        this.stocks.remove(stock);
+    public boolean deleteStock(Stock stock) {
+        return this.stocks.remove(stock);
     }
 }
 
