@@ -21,16 +21,6 @@ public class ProfUserController {
         this.profUserService = profUserService;
     }
 
-    @GetMapping("/profs")
-    public List<ProfessionalUsersDto> getAllProfessionals(Authentication auth){
-        List<ProfessionalUsersDto> listProfDto = profUserService.findAllProfsDto(auth.getAuthorities());
-
-        if(listProfDto == null){
-            throw new EntityNotFoundException("No professional found");
-        }
-        return listProfDto;
-    }
-
     @GetMapping("/prof")
     public PersonalProfessionalUserDto getPersonalProfile(Authentication auth){
         PersonalProfessionalUserDto proDto = profUserService.getProfProfile(auth.getName());
@@ -53,5 +43,26 @@ public class ProfUserController {
                 .buildAndExpand(userId).toUri();
 
         return ResponseEntity.created(location).build();
+    }
+
+    @GetMapping("/profs")
+    public List<ProfessionalUsersDto> getAllProfessionals(Authentication auth){
+        List<ProfessionalUsersDto> listProfDto = profUserService.findAllProfsDto(auth.getAuthorities());
+
+        if(listProfDto == null){
+            throw new EntityNotFoundException("No professional found");
+        }
+        return listProfDto;
+    }
+
+    @GetMapping("/profs/{id}")
+    public ProfessionalUsersDto getAllProfessionals(@PathVariable Long id,
+                                                    Authentication auth){
+        ProfessionalUsersDto profDto = profUserService.findProfById(id, auth);
+
+        if(profDto == null){
+            throw new EntityNotFoundException("No professional with id: " + id + ", found.");
+        }
+        return profDto;
     }
 }

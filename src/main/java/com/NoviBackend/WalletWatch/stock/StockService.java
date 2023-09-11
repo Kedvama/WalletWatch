@@ -109,7 +109,7 @@ public class StockService {
         if(authorities.stream().anyMatch(ga -> ga.getAuthority().equals("ROLE_USER"))){
             return regularUserService.findByUsername(username);
         } else if (authorities.stream().anyMatch(ga -> ga.getAuthority().equals("ROLE_PROF"))) {
-            return profUserService.findByUsername(username);
+            return profUserService.findProfByUsername(username);
         }
         return null;
     }
