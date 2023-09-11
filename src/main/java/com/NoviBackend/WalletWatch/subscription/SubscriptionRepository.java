@@ -1,6 +1,6 @@
 package com.NoviBackend.WalletWatch.subscription;
 
-import com.NoviBackend.WalletWatch.user.professional.ProfessionalUser
+import com.NoviBackend.WalletWatch.user.professional.ProfessionalUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
