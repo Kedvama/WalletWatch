@@ -2,10 +2,8 @@ package com.NoviBackend.WalletWatch.security;
 
 import com.NoviBackend.WalletWatch.exception.InvalidLoginCredentials;
 import com.NoviBackend.WalletWatch.request.LoginRequest;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,10 +34,3 @@ public class AuthController {
         return jwtUtil.generateToken(jdbcUserDetailsManager.loadUserByUsername(request.getUsername()));
     }
 }
-
-
-/*
-TODO
-
-- how get user from the security.context.
- */

@@ -1,10 +1,8 @@
 package com.NoviBackend.WalletWatch.subscription;
 
 import com.NoviBackend.WalletWatch.user.professional.ProfessionalUser;
-import com.NoviBackend.WalletWatch.wallet.Wallet;
 import jakarta.persistence.*;
 
-import java.util.List;
 
 @Entity
 public class Subscription {
