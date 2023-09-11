@@ -70,6 +70,7 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/auth").permitAll()
                 .requestMatchers(HttpMethod.POST,"/users").permitAll()
                 .requestMatchers(HttpMethod.POST, "/user/promote").hasRole("USER")
+                .requestMatchers(HttpMethod.POST, "/prof/demote").hasRole("PROF ")
                 .requestMatchers(HttpMethod.PUT, "/stocks/{id}").hasAnyRole("ADMIN", "PROF", "USER")
                 .requestMatchers(HttpMethod.PUT, "/subscriptions").hasAnyRole("ADMIN", "USER")
 
