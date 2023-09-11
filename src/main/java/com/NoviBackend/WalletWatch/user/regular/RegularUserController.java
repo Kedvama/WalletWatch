@@ -5,7 +5,6 @@ import com.NoviBackend.WalletWatch.exception.UniqueAlreadyExistsException;
 import com.NoviBackend.WalletWatch.request.RequestPromote;
 import com.NoviBackend.WalletWatch.user.dto.RegularUserCreationDto;
 import com.NoviBackend.WalletWatch.user.dto.RegularUserDto;
-import com.NoviBackend.WalletWatch.wallet.Wallet;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -23,19 +22,19 @@ public class RegularUserController {
         this.regularUserService = regularUserService;
     }
 
+    @GetMapping("/user")
+    public RegularUserDto goToPersonalPage(Authentication auth){
+        RegularUserDto regularUserDto = regularUserService.getRegularUserDto(auth.getName());
+
+        if(regularUserDto == null)
+            throw new EntityNotFoundException("username: " + auth.getName() + ", not found");
+
+        return regularUserDto;
+    }
+
     @GetMapping("/users")
     public List<RegularUser> getAllUsers(){
         return regularUserService.findAllRegularUsers();
-    }
-
-    @GetMapping("/users/{id}")
-    public RegularUser goToPersonalPage(@PathVariable Long id){
-        RegularUser user = regularUserService.findById(id);
-
-        if(user == null)
-            throw new EntityNotFoundException("User with id: " + id + ", not found.");
-
-        return user;
     }
 
     @PostMapping("/users")
@@ -59,14 +58,14 @@ public class RegularUserController {
         return ResponseEntity.created(location).build();
     }
 
-    @GetMapping("/user")
-    public RegularUserDto goToPersonalPage(Authentication auth){
-        RegularUserDto regularUserDto = regularUserService.getRegularUserDto(auth.getName());
+    @GetMapping("/users/{id}")
+    public RegularUser goToPersonalPage(@PathVariable Long id){
+        RegularUser user = regularUserService.findById(id);
 
-        if(regularUserDto == null)
-            throw new EntityNotFoundException("username: " + auth.getName() + ", not found");
+        if(user == null)
+            throw new EntityNotFoundException("User with id: " + id + ", not found.");
 
-        return regularUserDto;
+        return user;
     }
 
     @PostMapping("/user/promote")

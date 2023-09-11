@@ -54,10 +54,6 @@ public class RegularUserService {
         return regularUser.getId();
     }
 
-    public void removeRegularUser(RegularUser user){
-        regularUserRepository.delete(user);
-    }
-
     public RegularUser findById(Long id) {
         Optional<RegularUser> user = regularUserRepository.findById(id);
         return user.orElse(null);
@@ -66,15 +62,32 @@ public class RegularUserService {
     public RegularUser findByUsername(String username) {
         Optional<RegularUser> user = regularUserRepository.findRegularUserByUsername(username);
 
-        if(user.isEmpty()){
-            return null;
-        }
-
-        return user.get();
+        return user.orElse(null);
     }
 
     public List<RegularUser> findAllRegularUsers() {
         return regularUserRepository.findAll();
+    }
+
+    public RegularUserDto getRegularUserDto(String username) {
+        RegularUser user = findByUsername(username);
+
+        if(user == null){
+            return null;
+        }
+
+        // map user to RegularUserDto
+        return userMapper.convertRegularUserToRegularUserDto(user);
+    }
+
+    public Long promoteUser(RequestPromote request, String username) {
+        RegularUser regularUser = findByUsername(username);
+
+        if(regularUser == null){
+            return null;
+        }
+
+        return profUserService.createProfessionalUser(regularUser, request);
     }
 
     public long usernameEmailCheck(RegularUserCreationDto user) {
@@ -87,31 +100,6 @@ public class RegularUserService {
 
         // check if username or email in ProfessionalUser
         return profUserService.existsByUsernameAndEmail(user);
-    }
-
-    public RegularUserDto getRegularUserDto(String username) {
-        RegularUser user = findByUsername(username);
-
-        if(user == null){
-            return null;
-        }
-
-        // map user to RegularUserDto
-        RegularUserDto userDto = userMapper.convertRegularUserToRegularUserDto(user);
-
-        return userDto;
-    }
-
-    public Long promoteUser(RequestPromote request, String username) {
-        RegularUser regularUser = findByUsername(username);
-
-        if(regularUser == null){
-            return null;
-        }
-
-        Long profId = profUserService.createProfessionalUser(regularUser, request);
-
-        return profId;
     }
 }
 

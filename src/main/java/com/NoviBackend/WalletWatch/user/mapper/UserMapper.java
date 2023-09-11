@@ -6,8 +6,6 @@ import com.NoviBackend.WalletWatch.user.dto.RegularUserCreationDto;
 import com.NoviBackend.WalletWatch.user.dto.RegularUserDto;
 import com.NoviBackend.WalletWatch.user.professional.ProfessionalUser;
 import com.NoviBackend.WalletWatch.user.regular.RegularUser;
-import com.NoviBackend.WalletWatch.wallet.Wallet;
-import com.NoviBackend.WalletWatch.wallet.dto.WalletDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 

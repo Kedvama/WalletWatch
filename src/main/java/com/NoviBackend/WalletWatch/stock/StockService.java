@@ -43,15 +43,28 @@ public class StockService {
     }
 
     // methods
-    public List<Stock> getYourStocks(String username, Collection<? extends GrantedAuthority> authorities) {
-        // get regular or prof
+    public Long addStock(String username, Collection<? extends GrantedAuthority> authorities, StockDto stockDto) {
+        // map stockDto to stock
+        Stock stock = stockMapper.convertStockDtoToStock(stockDto);
         AbstractUsers user = smallUserProfFactory(authorities, username);
 
         if(user == null){
             return null;
         }
 
-        return user.getPersonalWallet().getStocks();
+        return addStockToWallet(stock, user);
+    }
+
+    public Long deleteStock(Long id, Authentication auth) {
+        AbstractUsers user = smallUserProfFactory(auth.getAuthorities(), auth.getName());
+        Stock stock = getStockFromWalletById(id, user);
+
+        if(stock == null || deleteStockFromWallet(stock, user) == null){
+            return null;
+        }
+
+        stockRepository.delete(stock);
+        return stock.getId();
     }
 
     public Stock getStock(String username, Collection<? extends GrantedAuthority> authorities, Long stockId) {
@@ -64,16 +77,15 @@ public class StockService {
         return getStockFromWalletById(stockId, user);
     }
 
-    public Long addStock(String username, Collection<? extends GrantedAuthority> authorities, StockDto stockDto) {
-        // map stockDto to stock
-        Stock stock = stockMapper.convertStockDtoToStock(stockDto);
+    public List<Stock> getYourStocks(String username, Collection<? extends GrantedAuthority> authorities) {
+        // get regular or prof
         AbstractUsers user = smallUserProfFactory(authorities, username);
 
         if(user == null){
             return null;
         }
 
-        return addStockToWallet(stock, user);
+        return user.getPersonalWallet().getStocks();
     }
 
     public Long updateStock(Long stockId, StockDto stockDto, Authentication auth) {
@@ -91,40 +103,7 @@ public class StockService {
         return replaceStock(user, oldStock, newStock);
     }
 
-    public Long deleteStock(Long id, Authentication auth) {
-        AbstractUsers user = smallUserProfFactory(auth.getAuthorities(), auth.getName());
-        Stock stock = getStockFromWalletById(id, user);
-
-        if(stock == null || deleteStockFromWallet(stock, user) == null){
-            return null;
-        }
-
-        stockRepository.delete(stock);
-        return stock.getId();
-    }
-
     // functions
-    private AbstractUsers smallUserProfFactory(Collection<? extends GrantedAuthority> authorities, String username){
-
-        if(authorities.stream().anyMatch(ga -> ga.getAuthority().equals("ROLE_USER"))){
-            return regularUserService.findByUsername(username);
-        } else if (authorities.stream().anyMatch(ga -> ga.getAuthority().equals("ROLE_PROF"))) {
-            return profUserService.findByUsername(username);
-        }
-        return null;
-    }
-
-    private AbstractUsers smallUserStockSaveFactory(AbstractUsers user){
-
-        if(regularUserRepository.existsRegularUserByUsername(user.getUsername())){
-            regularUserRepository.save((RegularUser) user);
-        } else if (profUserRepository.existsProfessionalUserByUsername(user.getUsername())) {
-            profUserRepository.save((ProfessionalUser) user);
-        }
-
-        return user;
-    }
-
     private Long addStockToWallet(Stock stock, AbstractUsers user){
         // set stock wallet
         stock.setWallet(user.getPersonalWallet());
@@ -134,6 +113,16 @@ public class StockService {
         user.getPersonalWallet().addStock(stock);
 
         return stock.getId();
+    }
+
+    private AbstractUsers deleteStockFromWallet(Stock stock, AbstractUsers user){
+        boolean stockRemoved = user.getPersonalWallet().deleteStock(stock);
+
+        if(!stockRemoved){
+            return null;
+        }
+
+        return smallUserStockSaveFactory(user);
     }
 
     private Stock getStockFromWalletById(Long stockId, AbstractUsers user){
@@ -154,14 +143,25 @@ public class StockService {
         return newStock.getId();
     }
 
-    private AbstractUsers deleteStockFromWallet(Stock stock, AbstractUsers user){
-        boolean stockRemoved = user.getPersonalWallet().deleteStock(stock);
+    private AbstractUsers smallUserProfFactory(Collection<? extends GrantedAuthority> authorities, String username){
 
-        if(!stockRemoved){
-            return null;
+        if(authorities.stream().anyMatch(ga -> ga.getAuthority().equals("ROLE_USER"))){
+            return regularUserService.findByUsername(username);
+        } else if (authorities.stream().anyMatch(ga -> ga.getAuthority().equals("ROLE_PROF"))) {
+            return profUserService.findProfByUsername(username);
+        }
+        return null;
+    }
+
+    private AbstractUsers smallUserStockSaveFactory(AbstractUsers user){
+
+        if(regularUserRepository.existsRegularUserByUsername(user.getUsername())){
+            regularUserRepository.save((RegularUser) user);
+        } else if (profUserRepository.existsProfessionalUserByUsername(user.getUsername())) {
+            profUserRepository.save((ProfessionalUser) user);
         }
 
-        return smallUserStockSaveFactory(user);
+        return user;
     }
 }
 

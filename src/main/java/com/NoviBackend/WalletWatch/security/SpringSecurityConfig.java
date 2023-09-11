@@ -55,7 +55,7 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/users/{id}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/user/**").hasAnyRole("ADMIN", "USER")
-                .requestMatchers(HttpMethod.GET, "/profs").hasAnyRole("ADMIN", "PROF", "USER")
+                .requestMatchers(HttpMethod.GET, "/profs/**").hasAnyRole("ADMIN", "PROF", "USER")
                 .requestMatchers(HttpMethod.GET, "/prof/**").hasRole("PROF")
                 .requestMatchers(HttpMethod.GET, "/subscriptions").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/subscriptions/{id}").hasRole("ADMIN")
@@ -70,7 +70,7 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/auth").permitAll()
                 .requestMatchers(HttpMethod.POST,"/users").permitAll()
                 .requestMatchers(HttpMethod.POST, "/user/promote").hasRole("USER")
-                .requestMatchers(HttpMethod.POST, "/prof/demote").hasRole("PROF ")
+                .requestMatchers(HttpMethod.POST, "/prof/demote").hasRole("PROF")
                 .requestMatchers(HttpMethod.PUT, "/stocks/{id}").hasAnyRole("ADMIN", "PROF", "USER")
                 .requestMatchers(HttpMethod.PUT, "/subscriptions").hasAnyRole("ADMIN", "USER")
 

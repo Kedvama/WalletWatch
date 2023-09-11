@@ -6,9 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @MappedSuperclass
 public abstract class AbstractUsers {
@@ -97,19 +95,20 @@ public abstract class AbstractUsers {
         this.personalWallet = wallet;
     }
 
+    public List<Subscription> getSubscriptions() {
+        return subscriptions;
+    }
+
+    // methods
+    public void addSubscriptions(Subscription subscription) {
+        this.subscriptions.add(subscription);
+    }
+
     public void deleteSubscriptions() {
         this.subscriptions = new ArrayList<>();
     }
 
     public void removeSubscription(Subscription subscription){
         this.subscriptions.remove(subscription);
-    }
-
-    public List<Subscription> getSubscriptions() {
-        return subscriptions;
-    }
-
-    public void addSubscriptions(Subscription subscription) {
-        this.subscriptions.add(subscription);
     }
 }

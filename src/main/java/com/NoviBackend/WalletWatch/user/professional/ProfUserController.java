@@ -2,7 +2,6 @@ package com.NoviBackend.WalletWatch.user.professional;
 
 import com.NoviBackend.WalletWatch.exception.EntityNotFoundException;
 import com.NoviBackend.WalletWatch.request.RequestDemote;
-import com.NoviBackend.WalletWatch.user.AbstractUsers;
 import com.NoviBackend.WalletWatch.user.dto.PersonalProfessionalUserDto;
 import com.NoviBackend.WalletWatch.user.dto.ProfessionalUsersDto;
 import org.springframework.http.ResponseEntity;
@@ -19,16 +18,6 @@ public class ProfUserController {
 
     public ProfUserController(ProfUserService profUserService){
         this.profUserService = profUserService;
-    }
-
-    @GetMapping("/profs")
-    public List<ProfessionalUsersDto> getAllProfessionals(Authentication auth){
-        List<ProfessionalUsersDto> listProfDto = profUserService.findAllProfsDto(auth.getAuthorities());
-
-        if(listProfDto == null){
-            throw new EntityNotFoundException("No professional found");
-        }
-        return listProfDto;
     }
 
     @GetMapping("/prof")
@@ -53,5 +42,26 @@ public class ProfUserController {
                 .buildAndExpand(userId).toUri();
 
         return ResponseEntity.created(location).build();
+    }
+
+    @GetMapping("/profs")
+    public List<ProfessionalUsersDto> getAllProfessionals(Authentication auth){
+        List<ProfessionalUsersDto> listProfDto = profUserService.findAllProfsDto(auth.getAuthorities());
+
+        if(listProfDto == null){
+            throw new EntityNotFoundException("No professional found");
+        }
+        return listProfDto;
+    }
+
+    @GetMapping("/profs/{id}")
+    public ProfessionalUsersDto getAllProfessionals(@PathVariable Long id,
+                                                    Authentication auth){
+        ProfessionalUsersDto profDto = profUserService.findProfById(id, auth);
+
+        if(profDto == null){
+            throw new EntityNotFoundException("No professional with id: " + id + ", found.");
+        }
+        return profDto;
     }
 }

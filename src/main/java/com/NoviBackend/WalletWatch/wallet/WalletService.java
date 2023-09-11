@@ -35,25 +35,24 @@ public class WalletService {
         this.profUserService = profUserService;
     }
 
-    public Wallet findPublicById(int id) {
-        Optional<Wallet> wallet = walletRepository.findWalletBySharedIsTrueAndId(id);
-        return wallet.orElse(null);
-    }
-
-    public List<WalletDto> getAllPublicWallets() {
-        List<Wallet> walletList = walletRepository.findWalletBySharedIsTrue();
-        if(walletList.isEmpty())
-            return null;
-
-
-        return walletMapper.convertWalletToDtoList(walletList);
-    }
-
     public Wallet createWallet(){
         Wallet wallet = new Wallet();
         walletRepository.save(wallet);
 
         return wallet;
+    }
+
+    public Wallet findWalletById(Long id) {
+        Optional<Wallet> wallet = walletRepository.findById(id);
+        return wallet.orElse(null);
+    }
+
+    public List<WalletDto> getAllWallets() {
+        List<Wallet> walletList = walletRepository.findAll();
+        if(walletList.isEmpty())
+            return null;
+
+        return walletMapper.convertWalletToDtoList(walletList);
     }
 
     public RegularPersonalWalletDto getRegularPersonalWalletDto(String username) {
@@ -63,34 +62,29 @@ public class WalletService {
             return null;
         }
 
-        RegularPersonalWalletDto walletDto = walletMapper.convertWalletToRegularWalletDto(
+        return walletMapper.convertWalletToRegularWalletDto(
                 regularUser.getPersonalWallet()
         );
-
-        return walletDto;
     }
 
     public ProfPersonalWalletDto getProfPersonalWalletDto(String username) {
-        ProfessionalUser profUser = profUserService.findByUsername(username);
+        ProfessionalUser profUser = profUserService.findProfByUsername(username);
 
         if(profUser == null){
             return null;
         }
 
-        ProfPersonalWalletDto walletDto = walletMapper.convertWalletToProfWalletDto(
+        return walletMapper.convertWalletToProfWalletDto(
                 profUser.getPersonalWallet()
         );
-
-        return walletDto;
     }
 
     public boolean shareOrUnshareProfWallet(String username,
                                             Collection<? extends GrantedAuthority> authorities,
                                             RequestShareWallet shareWallet) {
-
         boolean shared = false;
 
-        // check if user is prof
+        // extra check if user is prof
         if(authorities.stream().anyMatch(ga -> ga.getAuthority().equals("ROLE_PROF"))){
             ProfessionalUser prof = profUserService.findProfByUsername(username);
             shared = prof.shareWallet(shareWallet.getShareWallet());
