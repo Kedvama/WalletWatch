@@ -23,33 +23,6 @@ public class AuthenticationService {
         this.authoritiesRepository = authoritiesRepository;
     }
 
-    public SecurityUser findByUsername(String username){
-        Optional<SecurityUser> user = securityUserRepository.findSecurityUserByUsername(username);
-        return user.orElse(null);
-    }
-
-    public boolean checkCredentials(LoginRequest request) {
-        boolean matches = false;
-        SecurityUser user = findByUsername(request.getUsername());
-
-        if(user != null){
-            matches = passwordEncoder.matches(request.getPassword(), user.getPassword());
-        }
-        return matches;
-    }
-
-    public void saveRegularUser(RegularUserCreationDto userDto) {
-        SecurityUser user = new SecurityUser();
-        user.setUsername(userDto.getUsername());
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-
-        Authority auth = new Authority(user.getUsername(), "ROLE_USER");
-
-        user.addAuthorities(auth);
-        securityUserRepository.save(user);
-        authoritiesRepository.save(auth);
-    }
-
     public void changeRole(String username, String newRole, String  oldRole){
         // get user
         SecurityUser user = findByUsername(username);
@@ -67,5 +40,32 @@ public class AuthenticationService {
                 securityUserRepository.save(user);
             }
         }
+    }
+
+    public boolean checkCredentials(LoginRequest request) {
+        boolean matches = false;
+        SecurityUser user = findByUsername(request.getUsername());
+
+        if(user != null){
+            matches = passwordEncoder.matches(request.getPassword(), user.getPassword());
+        }
+        return matches;
+    }
+
+    public SecurityUser findByUsername(String username){
+        Optional<SecurityUser> user = securityUserRepository.findSecurityUserByUsername(username);
+        return user.orElse(null);
+    }
+
+    public void saveRegularUser(RegularUserCreationDto userDto) {
+        SecurityUser user = new SecurityUser();
+        user.setUsername(userDto.getUsername());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+
+        Authority auth = new Authority(user.getUsername(), "ROLE_USER");
+
+        user.addAuthorities(auth);
+        securityUserRepository.save(user);
+        authoritiesRepository.save(auth);
     }
 }

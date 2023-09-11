@@ -2,7 +2,6 @@ package com.NoviBackend.WalletWatch.user.professional;
 
 import com.NoviBackend.WalletWatch.exception.EntityNotFoundException;
 import com.NoviBackend.WalletWatch.request.RequestDemote;
-import com.NoviBackend.WalletWatch.user.AbstractUsers;
 import com.NoviBackend.WalletWatch.user.dto.PersonalProfessionalUserDto;
 import com.NoviBackend.WalletWatch.user.dto.ProfessionalUsersDto;
 import org.springframework.http.ResponseEntity;
