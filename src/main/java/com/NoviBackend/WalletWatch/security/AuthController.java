@@ -35,11 +35,6 @@ public class AuthController {
 
         return jwtUtil.generateToken(jdbcUserDetailsManager.loadUserByUsername(request.getUsername()));
     }
-
-    @GetMapping("/test")
-    public String testing(Authentication authentication){
-        return authentication.getName();
-    }
 }
 
 
