@@ -21,29 +21,30 @@ public class WalletController {
         this.walletService = walletService;
     }
 
-    @GetMapping("/wallets")
-    public List<WalletDto> getAllPublicWallets(){
-        List<WalletDto> walletList = walletService.getAllPublicWallets();
-        if(walletList == null)
-            throw new EntityNotFoundException("No shared wallets found.");
-
-        return walletList;
-    }
-
-    @GetMapping("/wallets/{id}")
-    public Wallet getPublicWalletById(@PathVariable int id){
-        Wallet wallet = walletService.findPublicById(id);
-        if(wallet == null)
-            throw new EntityNotFoundException("Shared wallet id: " + id + ", not found.");
-
-        return wallet;
-    }
-
     @PostMapping("/wallet")
     public ResponseEntity<Object> shareUnshareWalletAsProf(@RequestBody RequestShareWallet shareWallet,
                                                            Authentication auth){
         boolean shared = walletService.shareOrUnshareProfWallet(auth.getName(), auth.getAuthorities(), shareWallet);
         return ResponseEntity.ok().body(shared);
+    }
+
+    @GetMapping("/wallets")
+    public List<WalletDto> getAllWallets(){
+        List<WalletDto> walletList = walletService.getAllWallets();
+
+        if(walletList == null)
+            throw new EntityNotFoundException("No wallets found.");
+
+        return walletList;
+    }
+
+    @GetMapping("/wallets/{id}")
+    public Wallet getPublicWalletById(@PathVariable Long id){
+        Wallet wallet = walletService.findWalletById(id);
+        if(wallet == null)
+            throw new EntityNotFoundException("Shared wallet id: " + id + ", not found.");
+
+        return wallet;
     }
 
     @GetMapping("/user/wallet")

@@ -26,7 +26,7 @@ public class Wallet {
         this.stocks = new ArrayList<>();
     }
 
-    // Getters
+    // Getters & Setters
     public Long getId(){
         return id;
     }
@@ -47,6 +47,8 @@ public class Wallet {
         this.stocks = stocks;
     }
 
+
+    // methods
     public void setStock(Stock oldStock, Stock newStock){
         int stockIndex = this.stocks.indexOf(oldStock);
         this.stocks.set(stockIndex, newStock);
