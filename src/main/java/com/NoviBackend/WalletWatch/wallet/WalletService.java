@@ -68,7 +68,7 @@ public class WalletService {
     }
 
     public ProfPersonalWalletDto getProfPersonalWalletDto(String username) {
-        ProfessionalUser profUser = profUserService.findByUsername(username);
+        ProfessionalUser profUser = profUserService.findProfByUsername(username);
 
         if(profUser == null){
             return null;

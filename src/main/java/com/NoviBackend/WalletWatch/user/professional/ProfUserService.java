@@ -12,6 +12,7 @@ import com.NoviBackend.WalletWatch.user.regular.RegularUser;
 import com.NoviBackend.WalletWatch.user.regular.RegularUserRepository;
 import com.NoviBackend.WalletWatch.wallet.WalletRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
@@ -43,55 +44,11 @@ public class ProfUserService {
         this.walletRepository = walletRepository;
     }
 
-    // find
-    public List<ProfessionalUsersDto> findAllProfsDto(Collection<? extends GrantedAuthority> authorities) {
-
-        List<ProfessionalUser> listProfessionals = new ArrayList<>();
-
-        // if admin return all, else return with shared wallet
-        if(authorities.stream().anyMatch(ga -> ga.getAuthority().equals("ROLE_ADMIN"))){
-            listProfessionals = profUserRepository.findAll();
-        }else{
-            List<ProfessionalUser> allProfessionalUsers = profUserRepository.findAll();
-            for(ProfessionalUser prof: allProfessionalUsers){
-                if(prof.getPersonalWallet().getShared()){
-                    listProfessionals.add(prof);
-                }
-            }
-        }
-        if(listProfessionals == null){
-            return null;
-        }
-
-        return userMapper.convertListProfToListProfDto(listProfessionals);
-    }
-
-    public ProfessionalUser findProfById(Long id) {
-        Optional<ProfessionalUser> prof = profUserRepository.findById(id);
-        return prof.orElse(null);
-    }
-
-    public ProfessionalUser findProfByUsername(String username){
-        Optional<ProfessionalUser> prof = profUserRepository.findProfessionalUserByUsername(username);
-
-        return prof.orElse(null);
-
-    }
-
-    // create
     public long createProfessionalUser(RegularUser regularUser, RequestPromote request){
-        // created
         ProfessionalUser professionalUser = userMapper.convertRegularUserToProfessional(regularUser);
 
-        // set extra attributes
-        professionalUser.deleteSubscriptions();
-        professionalUser.setCompany(request.getCompany());
-        professionalUser.setShortIntroduction(request.getIntroduction());
-
-        List<Subscription> subscriptions = regularUser.getSubscriptions();
-        subscriptionRepository.deleteAll(subscriptions);
-        regularUserRepository.delete(regularUser);
-        profUserRepository.save(professionalUser);
+        professionalUser = setAttributes(professionalUser, request);
+        conversionToProf(regularUser, professionalUser);
 
         // change authority to prof
         authenticationService.changeRole(professionalUser.getUsername(), "ROLE_PROF", "ROLE_USER");
@@ -99,40 +56,15 @@ public class ProfUserService {
         return professionalUser.getId();
     }
 
-    // delete
-    public void deleteProfessionalUser(ProfessionalUser professionalUser){
-        profUserRepository.delete(professionalUser);
-    }
-
-    // methods
     @Transactional
     public Long demoteProfToRegularUser(String username){
         // get professionalUser
         ProfessionalUser prof =  findProfByUsername(username);
 
-        // unshare wallet
-        prof.shareWallet(false);
-        walletRepository.save(prof.getPersonalWallet());
+        prof = unshareWallet(prof);
+        prof = deleteFromSubscriptions(prof);
 
-        // delete prof from subscription
-        int subs = subscriptionRepository.countByProfessionalUser(prof);
-        if(subs != 0){
-            subscriptionRepository.deleteAllByProfessionalUser(prof);
-        }
-
-        // delete prof
-        deleteProfessionalUser(prof);
-
-        //convert prof to regularUser
-        RegularUser regularUser = userMapper.convertProfessionalToRegularUser(prof);
-
-        // save regularUser
-        regularUserRepository.save(regularUser);
-
-        // change authority
-        authenticationService.changeRole(regularUser.getUsername(), "ROLE_USER", "ROLE_PROF");
-
-        return regularUser.getId();
+        return convertToRegularUser(prof);
     }
 
     public int existsByUsernameAndEmail(RegularUserCreationDto user) {
@@ -145,10 +77,36 @@ public class ProfUserService {
         }
     }
 
-    public ProfessionalUser findByUsername(String username) {
-        Optional<ProfessionalUser> user = profUserRepository.findProfessionalUserByUsername(username);
+    public List<ProfessionalUsersDto> findAllProfsDto(Collection<? extends GrantedAuthority> authorities) {
+        List<ProfessionalUser> listProfessionals = adminOrNot(profUserRepository.findAll(), authorities);
 
-        return user.orElse(null);
+        if(listProfessionals == null){
+            return null;
+        }
+
+        return userMapper.convertListProfToListProfDto(listProfessionals);
+    }
+
+    public ProfessionalUsersDto findProfById(Long id, Authentication auth) {
+        Optional<ProfessionalUser> prof = profUserRepository.findById(id);
+
+        if(prof.isEmpty()){
+            return null;
+        }
+
+        ProfessionalUser professional = adminOrNot(prof.get(), auth.getAuthorities());
+
+        if(professional == null ) {
+            return null;
+        }
+
+        return userMapper.convertProfToProfDto(professional);
+    }
+
+    public ProfessionalUser findProfByUsername(String username){
+        Optional<ProfessionalUser> prof = profUserRepository.findProfessionalUserByUsername(username);
+
+        return prof.orElse(null);
     }
 
     public PersonalProfessionalUserDto getProfProfile(String username) {
@@ -163,5 +121,92 @@ public class ProfUserService {
                 subscriptionRepository.countByProfessionalUser(prof));
 
         return profDto;
+    }
+
+
+    // functions
+    private List<ProfessionalUser> adminOrNot(List<ProfessionalUser> listProfessionals,
+                                              Collection<? extends GrantedAuthority> authorities) {
+        // if admin return all, else return with shared wallet
+        if (authorities.stream().anyMatch(ga -> ga.getAuthority().equals("ROLE_ADMIN"))) {
+            return listProfessionals;
+        }
+
+        // loop through all the profs and add them when wallet is shared.
+        List<ProfessionalUser> sharedProfessionals = new ArrayList<>();
+
+        for (ProfessionalUser prof : listProfessionals) {
+            if (prof.getPersonalWallet().getShared()) {
+                sharedProfessionals.add(prof);
+            }
+        }
+
+        return sharedProfessionals;
+    }
+    private ProfessionalUser adminOrNot(ProfessionalUser prof, Collection<? extends GrantedAuthority> authorities){
+        if (authorities.stream()
+                .anyMatch(ga -> ga.getAuthority()
+                        .equals("ROLE_ADMIN"))
+                || prof.getPersonalWallet().getShared()) {
+            return prof;
+        }
+
+        return null;
+
+    }
+
+    private void conversionToProf(RegularUser regularUser, ProfessionalUser professionalUser){
+        List<Subscription> subscriptions = regularUser.getSubscriptions();
+
+        subscriptionRepository.deleteAll(subscriptions);
+        regularUserRepository.delete(regularUser);
+        profUserRepository.save(professionalUser);
+    }
+
+    private Long convertToRegularUser(ProfessionalUser prof){
+        //convert prof to regularUser
+        RegularUser regularUser = userMapper.convertProfessionalToRegularUser(prof);
+
+        // delete prof
+        deleteProfessionalUser(prof);
+
+        // save regularUser
+        regularUserRepository.save(regularUser);
+
+        // change authority
+        authenticationService.changeRole(regularUser.getUsername(), "ROLE_USER", "ROLE_PROF");
+
+        return regularUser.getId();
+    }
+
+    private void deleteProfessionalUser(ProfessionalUser professionalUser){
+        profUserRepository.delete(professionalUser);
+    }
+
+    private ProfessionalUser deleteFromSubscriptions(ProfessionalUser prof){
+        // delete prof from subscription
+        int subs = subscriptionRepository.countByProfessionalUser(prof);
+
+        if(subs != 0){
+            subscriptionRepository.deleteAllByProfessionalUser(prof);
+        }
+
+        return prof;
+    }
+
+    private ProfessionalUser setAttributes(ProfessionalUser professionalUser, RequestPromote request){
+        professionalUser.deleteSubscriptions();
+        professionalUser.setCompany(request.getCompany());
+        professionalUser.setShortIntroduction(request.getIntroduction());
+
+        return professionalUser;
+    }
+
+    private ProfessionalUser unshareWallet(ProfessionalUser prof){
+        // unshare wallet
+        prof.shareWallet(false);
+        walletRepository.save(prof.getPersonalWallet());
+
+        return prof;
     }
 }
