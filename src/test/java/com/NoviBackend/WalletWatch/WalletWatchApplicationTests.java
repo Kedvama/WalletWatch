@@ -8,6 +8,7 @@ class WalletWatchApplicationTests {
 
 	@Test
 	void contextLoads() {
+
 	}
 
 }
