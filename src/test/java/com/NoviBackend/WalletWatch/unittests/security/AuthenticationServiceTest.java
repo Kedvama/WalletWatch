@@ -5,6 +5,8 @@ import com.NoviBackend.WalletWatch.security.*;
 import com.NoviBackend.WalletWatch.user.dto.RegularUserCreationDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,15 @@ class AuthenticationServiceTest {
 
     @MockBean
     private SecurityUserRepository securityUserRepository;
+
+    @MockBean
+    private AuthoritiesRepository authoritiesRepository;
+
+    @Captor
+    private ArgumentCaptor<SecurityUser> securityUserArgumentCaptor;
+
+    @Captor
+    private ArgumentCaptor<Authority> authorityArgumentCaptor;
 
     @Mock
     Authority authority;
@@ -84,18 +95,29 @@ class AuthenticationServiceTest {
     }
 
     @Test
+    void changeRole_UserNull(){
+        // act
+        authService.changeRole("NotWouter", "ROLE_ADMIN", "ROLE_USER");
+
+        // arrange -> securityUserRepository must not be called
+        Mockito.verify(securityUserRepository, Mockito.times(0)).save(any(SecurityUser.class));
+    }
+
+    @Test
     void changeRole_UserNotNull_AuthNotNull(){
         // arrange
         authority = new Authority();
-        authority.setUsername("testname");
+        authority.setUsername("wouter");
         user.addAuthorities(authority);
 
         Mockito.when(securityUserRepository.findSecurityUserByUsername("wouter"))
                 .thenReturn(Optional.ofNullable(user));
 
         // act & assert
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+        Exception exception = assertThrows(ResponseStatusException.class, () ->
                 authService.changeRole("wouter", "ROLE_ADMIN", null));
+
+        assertEquals("500 INTERNAL_SERVER_ERROR", exception.getMessage());
     }
 
     @Test
@@ -144,18 +166,65 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void saveRegularUser() {
+    void saveRegularUser_SecurityUserTest() {
         // arrange
-        RegularUserCreationDto user = new RegularUserCreationDto("wouter", "password", "", "", "");
+        RegularUserCreationDto userDto = new RegularUserCreationDto("wouter2",
+                "password",
+                "wouter",
+                "novi",
+                "email@gmail.com");
 
-        when(securityUserRepository.save(Mockito.any(SecurityUser.class)))
-                .thenAnswer(i -> i.getArguments()[0]);
 
         // act
+        authService.saveRegularUser(userDto);
 
+        // Verify that the save method was called with the correct user
+        verify(securityUserRepository).save(securityUserArgumentCaptor.capture());
+        SecurityUser savedUser = securityUserArgumentCaptor.getValue();
+
+        // assert
+        Mockito.verify(securityUserRepository, Mockito.times(1)).save(any(SecurityUser.class));
+        assertEquals(userDto.getUsername(), savedUser.getUsername());
     }
 
     @Test
-    void findByUsername() {
+    void saveRegularUser_AuthoritiesTest(){
+        // arrange
+        RegularUserCreationDto userDto = new RegularUserCreationDto("wouter2",
+                "password",
+                "wouter",
+                "novi",
+                "email@gmail.com");
+
+        // act
+        authService.saveRegularUser(userDto);
+
+        // Verify that the save method was called with the correct authorities
+        verify(authoritiesRepository).save(authorityArgumentCaptor.capture());
+        Authority localAuthority = authorityArgumentCaptor.getValue();
+
+        // assert
+        Mockito.verify(authoritiesRepository, Mockito.times(1)).save(any(Authority.class));
+        assertEquals(userDto.getUsername(), localAuthority.getUsername());
+        assertEquals("ROLE_USER", localAuthority.getAuthority());
+    }
+
+    @Test
+    void savedRegularUser_PasswordCheck(){
+        // arrange
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        RegularUserCreationDto userDto = new RegularUserCreationDto("wouter2",
+                "password",
+                "wouter",
+                "novi",
+                "email@gmail.com");
+
+        // act
+        authService.saveRegularUser(userDto);
+        verify(securityUserRepository).save(securityUserArgumentCaptor.capture());
+        SecurityUser savedUser = securityUserArgumentCaptor.getValue();
+
+        // assert
+        assertTrue(passwordEncoder.matches(userDto.getPassword(), savedUser.getPassword()));
     }
 }
