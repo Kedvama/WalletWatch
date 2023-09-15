@@ -1,21 +1,22 @@
 package com.NoviBackend.WalletWatch.user.dto;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class RegularUserCreationDto {
-    @NotNull(message = "username is required")
+    @NotBlank(message = "username is required")
     private String username;
 
-    @NotNull(message = "password must be greater then 8 characters")
-    @Size(min=8)
+    @NotNull(message = "password required")
+    @Size(min=8, message = "password must be greater then 8 characters")
     private String password;
 
-    @NotNull(message = "First name is required")
+    @NotBlank(message = "First name is required")
     private String firstName;
 
-    @NotNull(message = "Please enter surname")
+    @NotBlank(message = "Please enter surname")
     private String surname;
 
     @Email
