@@ -2,7 +2,9 @@ package com.NoviBackend.WalletWatch.security;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -24,7 +26,20 @@ public class SecurityUser {
             orphanRemoval = true,
             fetch = FetchType.EAGER)
     @JoinColumn(name="username")
-    private Set<Authority> authorities = new HashSet<>();
+    private List<Authority> authorities = new ArrayList<>();
+
+    public SecurityUser() {
+    }
+
+    public SecurityUser(String username,
+                        String password,
+                        boolean enabled,
+                        List<Authority> authorities) {
+        this.username = username;
+        this.password = password;
+        this.enabled = enabled;
+        this.authorities = authorities;
+    }
 
     public String getUsername() {
         return username;
@@ -50,11 +65,11 @@ public class SecurityUser {
         this.enabled = enabled;
     }
 
-    public Set<Authority> getAuthorities() {
+    public List<Authority> getAuthorities() {
         return authorities;
     }
 
-    public void setAuthorities(Set<Authority> authorities) {
+    public void setAuthorities(List<Authority> authorities) {
         this.authorities = authorities;
     }
 

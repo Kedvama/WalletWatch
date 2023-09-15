@@ -7,6 +7,7 @@ import com.NoviBackend.WalletWatch.user.dto.RegularUserCreationDto;
 import com.NoviBackend.WalletWatch.user.dto.RegularUserDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -38,7 +39,7 @@ public class RegularUserController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<Object> createUser(@RequestBody RegularUserCreationDto userCreationDto) {
+    public ResponseEntity<Object> createUser(@RequestBody @Validated RegularUserCreationDto userCreationDto) {
         // check username and password
         regularUserService.usernameEmailCheck(userCreationDto);
 

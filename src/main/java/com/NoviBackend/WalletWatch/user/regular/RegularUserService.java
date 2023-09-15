@@ -39,19 +39,13 @@ public class RegularUserService {
         if(id != 0)
             return id;
 
-        // map to user if ok
+        // create RegularUser
         RegularUser regularUser = userMapper.convertRegularUserCreationDtoToRegularUser(userDto);
-
-        // set wallet
         regularUser.setPersonalWallet(walletService.createWallet());
 
-        // save to regular user
-        regularUserRepository.save(regularUser);
+        Long regularUserId = saveUser(userDto, regularUser);
 
-        // save to auth and security user
-        authService.saveRegularUser(userDto);
-
-        return regularUser.getId();
+        return regularUserId;
     }
 
     public RegularUser findById(Long id) {
@@ -100,6 +94,16 @@ public class RegularUserService {
 
         // check if username or email in ProfessionalUser
         return profUserService.existsByUsernameAndEmail(user);
+    }
+
+    private Long saveUser(RegularUserCreationDto userDto, RegularUser regularUser){
+        // save to regular user
+        regularUserRepository.save(regularUser);
+
+        // save to auth and security user
+        authService.saveRegularUser(userDto);
+
+        return regularUser.getId();
     }
 }
 
