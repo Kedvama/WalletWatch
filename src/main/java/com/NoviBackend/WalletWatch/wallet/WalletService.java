@@ -63,8 +63,7 @@ public class WalletService {
         }
 
         return walletMapper.convertWalletToRegularWalletDto(
-                regularUser.getPersonalWallet()
-        );
+                regularUser.getPersonalWallet());
     }
 
     public ProfPersonalWalletDto getProfPersonalWalletDto(String username) {
