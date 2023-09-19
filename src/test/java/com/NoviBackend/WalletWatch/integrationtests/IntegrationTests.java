@@ -37,7 +37,7 @@ public class IntegrationTests {
     @Test
     public void createUserTest() throws Exception{
         String userJson = "{\"username\": \"wouter\"," +
-                "\"password\": \"pass\"," +
+                "\"password\": \"passssss\"," +
                 "\"firstName\": \"Wouter\"," +
                 "\"surname\": \"glassmaker\"," +
                 "\"emailAddress\": \"wouterglas@gmail.com\"}";
